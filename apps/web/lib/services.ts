@@ -35,6 +35,16 @@ import type {
 import { ApiError } from "./errors";
 import { distanceLabel, money, statusLabel, timeLabel } from "./labels";
 import { hashPassword, verifyPassword } from "./password";
+import {
+  deleteSession,
+  findAccount,
+  findUserByEmail,
+  hasDatabase,
+  insertSession,
+  insertUser,
+  saveBusinessRecord,
+  userHasBusiness,
+} from "./accounts";
 import type { Business, Draft, PlanItem, Store, User } from "./model";
 import { readStore, resetStore, updateStore } from "./store";
 
@@ -46,8 +56,17 @@ export type Actor = {
 
 const ZONE = "America/Chicago";
 
-export function actorFromToken(token: string | null): Actor | null {
+export async function actorFromToken(token: string | null): Promise<Actor | null> {
   if (!token) return null;
+  if (hasDatabase()) {
+    const account = await findAccount(token);
+    if (account) {
+      const store = readStore();
+      const entitled = store.entitlements.some((item) => item.userId === account.user.id && item.status === "active");
+      const business = account.business ?? store.businesses.find((item) => item.ownerId === account.user.id) ?? null;
+      return { user: account.user, business, entitled };
+    }
+  }
   const store = readStore();
   const session = store.sessions.find((item) => item.token === token);
   if (!session) return null;
@@ -91,9 +110,29 @@ function openSession(store: Store, user: User): SessionDto {
   };
 }
 
-export function signUp(input: { name: string; email: string; password: string }): SessionDto {
+export async function signUp(input: { name: string; email: string; password: string }): Promise<SessionDto> {
   const email = input.email.trim().toLowerCase();
   const name = input.name.trim();
+  if (hasDatabase()) {
+    const existing = await findUserByEmail(email);
+    if (existing) throw new ApiError(409, "account_exists", "An account with that email already exists. Sign in instead.");
+    const user: User = { id: randomUUID(), name, email, role: "buyer", passwordHash: hashPassword(input.password) };
+    try {
+      await insertUser(user);
+    } catch (error) {
+      if (typeof error === "object" && error && "code" in error && error.code === "23505") {
+        throw new ApiError(409, "account_exists", "An account with that email already exists. Sign in instead.");
+      }
+      throw error;
+    }
+    const token = randomUUID();
+    await insertSession(token, user.id);
+    updateStore((store) => {
+      store.users.push({ ...user, passwordHash: null });
+      store.sessions.push({ token, userId: user.id, createdAt: new Date().toISOString() });
+    });
+    return { token, user: { id: user.id, name, email, role: user.role }, needsOnboarding: true, entitled: false };
+  }
   return updateStore((store) => {
     if (store.users.some((item) => item.email === email)) {
       throw new ApiError(409, "account_exists", "An account with that email already exists. Sign in instead.");
@@ -104,8 +143,25 @@ export function signUp(input: { name: string; email: string; password: string })
   });
 }
 
-export function signIn(input: { email: string; password: string }): SessionDto {
+export async function signIn(input: { email: string; password: string }): Promise<SessionDto> {
   const email = input.email.trim().toLowerCase();
+  if (hasDatabase()) {
+    const user = await findUserByEmail(email);
+    if (!user || !verifyPassword(input.password, user.passwordHash)) {
+      throw new ApiError(401, "invalid_credentials", "That email and password do not match.");
+    }
+    const token = randomUUID();
+    await insertSession(token, user.id);
+    const needsOnboarding = user.role === "buyer" && !(await userHasBusiness(user.id));
+    const store = readStore();
+    const entitled = store.entitlements.some((item) => item.userId === user.id && item.status === "active");
+    return {
+      token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      needsOnboarding,
+      entitled,
+    };
+  }
   return updateStore((store) => {
     const user = store.users.find((item) => item.email === email);
     if (!user || !verifyPassword(input.password, user.passwordHash)) {
@@ -115,14 +171,15 @@ export function signIn(input: { email: string; password: string }): SessionDto {
   });
 }
 
-export function signOut(token: string | null) {
+export async function signOut(token: string | null) {
   if (!token) return;
+  if (hasDatabase()) await deleteSession(token);
   updateStore((store) => {
     store.sessions = store.sessions.filter((item) => item.token !== token);
   });
 }
 
-export function saveBusiness(actor: Actor | null, input: {
+export async function saveBusiness(actor: Actor | null, input: {
   businessName: string;
   category: string;
   zip: string;
@@ -130,10 +187,10 @@ export function saveBusiness(actor: Actor | null, input: {
   offerings: string;
   tone: string;
   remindersOptIn?: boolean;
-}): MeDto {
+}): Promise<MeDto> {
   const current = requireActor(actor);
-  return updateStore((store) => {
-    const user = store.users.find((item) => item.id === current.user.id)!;
+  const saved = updateStore((store) => {
+    const user = store.users.find((item) => item.id === current.user.id) ?? current.user;
     let business = store.businesses.find((item) => item.ownerId === user.id);
     if (!business) {
       business = {
@@ -158,8 +215,10 @@ export function saveBusiness(actor: Actor | null, input: {
       if (input.remindersOptIn != null) business.remindersOptIn = input.remindersOptIn;
     }
     const entitled = store.entitlements.some((item) => item.userId === user.id && item.status === "active");
-    return meFrom(store, user, business, entitled);
+    return { profile: meFrom(store, user, business, entitled), business };
   });
+  if (hasDatabase()) await saveBusinessRecord(saved.business);
+  return saved.profile;
 }
 
 export function getMe(actor: Actor | null): MeDto {

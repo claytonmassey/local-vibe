@@ -11,9 +11,15 @@ create table users (
   role text not null check (role in ('buyer', 'researcher', 'publisher', 'admin'))
 );
 
+create table sessions (
+  token text primary key,
+  user_id text not null references users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
 create table businesses (
   id text primary key,
-  owner_id text not null references users(id),
+  owner_id text not null unique references users(id),
   name text not null,
   category text not null,
   zip text not null,

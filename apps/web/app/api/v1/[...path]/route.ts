@@ -70,29 +70,29 @@ async function handle(req: Request, context: Ctx): Promise<Response> {
 async function dispatch(req: Request, path: string[]): Promise<Response> {
   const key = `${req.method} ${path.join("/")}`;
   const url = new URL(req.url);
-  const actor = actorFromToken(tokenFrom(req));
+  const actor = await actorFromToken(tokenFrom(req));
   const query = Object.fromEntries(url.searchParams.entries());
 
   if (key === "POST account") {
-    const session = signUp(signUpBody.parse(await req.json()));
+    const session = await signUp(signUpBody.parse(await req.json()));
     const response = Response.json(session, { status: 201 });
     response.headers.append("set-cookie", sessionCookie(session.token));
     return response;
   }
   if (key === "POST session") {
-    const session = signIn(signInBody.parse(await req.json()));
+    const session = await signIn(signInBody.parse(await req.json()));
     const response = Response.json(session);
     response.headers.append("set-cookie", sessionCookie(session.token));
     return response;
   }
   if (key === "DELETE session") {
-    signOut(tokenFrom(req));
+    await signOut(tokenFrom(req));
     const response = new Response(null, { status: 204 });
     response.headers.append("set-cookie", sessionCookie(null));
     return response;
   }
   if (key === "GET me") return Response.json(getMe(actor));
-  if (key === "POST onboarding") return Response.json(saveBusiness(actor, onboardingBody.parse(await req.json())));
+  if (key === "POST onboarding") return Response.json(await saveBusiness(actor, onboardingBody.parse(await req.json())));
   if (key === "GET editions") return Response.json({ ...catalog(), match: query.q ? matchQuery(query.q) : null });
   if (key === "GET home") return Response.json(getHome(actor, query.date));
   if (key === "GET editions/founding/groups" || (path[0] === "editions" && path[2] === "groups" && req.method === "GET")) {
