@@ -13,7 +13,7 @@ export default async function EditionPage({ searchParams }: { searchParams: Prom
     <div className="site-wrap">
       <header className="site-header">
         <Link href="/"><Logo /></Link>
-        <Link className="btn primary" href="/sign-in">Sign in</Link>
+        <Link className="btn primary" href="/sign-in">Create account</Link>
       </header>
       <main>
         <p className="eyebrow">Edition {edition.version}</p>
@@ -34,15 +34,15 @@ export default async function EditionPage({ searchParams }: { searchParams: Prom
             <p className="meta">Distance is a straight line from the {edition.anchorZip} centroid until a method is approved. Unknown stays unknown.</p>
           </section>
           <section className="card">
-            <p className="eyebrow">Test checkout</p>
+            <p className="eyebrow">Founding price</p>
             <h2 style={{ fontSize: 48 }}>{edition.priceLabel}</h2>
             <ul>
               {edition.includes.map((item) => <li key={item}>{item}</li>)}
             </ul>
             <p>{edition.updateSummary}</p>
             <p>{edition.refundSummary}</p>
-            <p className="meta">Support {edition.supportEmail}</p>
-            <Link className="btn primary" href="/sign-in">Sign in to continue</Link>
+            <p className="meta">Stripe is not connected yet, so checkout unlocks the edition without a charge. Support {edition.supportEmail}</p>
+            <Link className="btn primary" href="/sign-in">Create an account</Link>
           </section>
         </div>
         <section style={{ marginTop: 28 }}>

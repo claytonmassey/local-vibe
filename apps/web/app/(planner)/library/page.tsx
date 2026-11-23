@@ -28,9 +28,9 @@ export default async function LibraryPage() {
         </section>
       ) : (
         <section className="card">
-          <p className="eyebrow">Test checkout · {edition.priceLabel}</p>
+          <p className="eyebrow">{edition.priceLabel}</p>
           <h2>PDF, spreadsheet and calendar.</h2>
-          <p>The return page checks the order on the server. A redirect by itself does not unlock the files.</p>
+          <p>Stripe is not connected yet, so checkout unlocks the edition without a charge. The return page still confirms the order on the server.</p>
           <CheckoutButton />
         </section>
       )}

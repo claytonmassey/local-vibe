@@ -137,4 +137,4 @@ export type Store = {
   stripeEventIds: string[];
 };
 
-export const SEED_VERSION = 3;
+export const SEED_VERSION = 4;

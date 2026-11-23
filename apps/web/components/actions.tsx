@@ -41,12 +41,6 @@ export function SignInForm() {
 
   return (
     <div className="stack">
-      <button className="btn primary" disabled={pending} onClick={() => enter("fixture", "sara@wildorchid.example")}>
-        Continue as Sara Hale
-      </button>
-      <button className="btn ghost" disabled={pending} onClick={() => enter("fixture", "alex@marketmap.example")}>
-        Open the publisher workspace
-      </button>
       <form
         className="stack"
         onSubmit={(event) => {
@@ -54,11 +48,22 @@ export function SignInForm() {
           void enter("create", email, name);
         }}
       >
-        <p className="eyebrow">Or start a buyer account</p>
-        <label className="field"><span>Your name</span><input value={name} onChange={(event) => setName(event.target.value)} required /></label>
-        <label className="field"><span>Email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required /></label>
-        <button className="btn ghost" disabled={pending}>Create account</button>
+        <label className="field"><span>Your name</span><input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required /></label>
+        <label className="field"><span>Email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
+        <button className="btn primary" disabled={pending}>{pending ? "Creating account…" : "Create account"}</button>
+        <p className="meta">Use the same email later to come back to this week.</p>
       </form>
+      <details>
+        <summary className="meta">Preview a sample account</summary>
+        <div className="stack" style={{ marginTop: 12 }}>
+          <button className="btn ghost" disabled={pending} onClick={() => enter("fixture", "sara@wildorchid.example")}>
+            Sara Hale, founding buyer
+          </button>
+          <button className="btn ghost" disabled={pending} onClick={() => enter("fixture", "alex@marketmap.example")}>
+            Alex Ruiz, publisher
+          </button>
+        </div>
+      </details>
       {error ? <p className="error" role="alert">{error}</p> : null}
     </div>
   );
@@ -316,7 +321,7 @@ export function CheckoutButton() {
           }
         }}
       >
-        {pending ? "Starting test checkout…" : "Continue with test checkout"}
+        {pending ? "Unlocking…" : "Unlock for $7.99"}
       </button>
       {error ? <p className="error" role="alert">{error}</p> : null}
     </div>

@@ -13,7 +13,7 @@ export default function LandingPage() {
         <Logo />
         <nav className="btn-row">
           <Link href="/edition">The edition</Link>
-          <Link className="btn primary" href="/sign-in">Sign in</Link>
+          <Link className="btn primary" href="/sign-in">Create account</Link>
         </nav>
       </header>
       <main className="hero">
@@ -25,7 +25,7 @@ export default function LandingPage() {
             <Link className="btn primary" href="/sign-in">Open the planner</Link>
             <Link className="btn ghost" href="/edition">Find your town</Link>
           </div>
-          <p className="meta">Fixture preview around Magnolia, Texas. {selling === "demo" ? "Checkout is a test. Live selling is locked." : "Live selling is locked."}</p>
+          <p className="meta">Fixture preview around Magnolia, Texas. {selling === "demo" ? "Checkout skips Stripe until it is connected." : "Live selling is locked."}</p>
         </div>
         <article className="card" aria-label="Preview of today’s plan">
           <p className="eyebrow">Today’s rhythm</p>
@@ -66,7 +66,7 @@ export default function LandingPage() {
           </div>
           <div>
             <b>{edition.priceLabel}</b>
-            <p className="meta">Pilot price for the test checkout. Not a live offer.</p>
+            <p className="meta">Stripe is not connected yet. Checkout unlocks the edition without a charge.</p>
             <Link className="btn primary" href="/edition">See coverage</Link>
           </div>
         </div>

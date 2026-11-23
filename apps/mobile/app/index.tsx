@@ -34,12 +34,12 @@ export default function SignInScreen() {
         <ScrollView contentContainerStyle={{ padding: 22, gap: 14 }}>
           <Text style={{ color: "#5d6840", letterSpacing: 1.4, fontWeight: "700" }}>MARKETMAP</Text>
           <Text style={{ fontFamily: serif, fontSize: 46, lineHeight: 48, color: colors.ink }}>Plan the week. Respect the group.</Text>
-          <Text style={{ color: colors.muted, fontSize: 16 }}>Sara already has the founding edition. A new account can walk the test checkout on the web, then open the same library here.</Text>
-          <Button label={pending ? "Signing in…" : "Continue as Sara Hale"} disabled={pending} onPress={() => enter("fixture", "sara@wildorchid.example")} />
-          <Button label="Publisher workspace" kind="ghost" disabled={pending} onPress={() => enter("fixture", "alex@marketmap.example")} />
+          <Text style={{ color: colors.muted, fontSize: 16 }}>Register with your name and email. A new account starts without the edition. Use the same email to come back.</Text>
           <TextInput value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={colors.muted} style={field} />
-          <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="Email for a new account" placeholderTextColor={colors.muted} style={field} />
-          <Button label="Create account" kind="ghost" disabled={pending || !email.includes("@")} onPress={() => enter("create", email.trim(), name.trim())} />
+          <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="Email" placeholderTextColor={colors.muted} style={field} />
+          <Button label={pending ? "Creating account…" : "Create account"} disabled={pending || !name.trim() || !email.includes("@")} onPress={() => enter("create", email.trim(), name.trim())} />
+          <Button label="Preview Sara Hale" kind="ghost" disabled={pending} onPress={() => enter("fixture", "sara@wildorchid.example")} />
+          <Button label="Preview the publisher workspace" kind="ghost" disabled={pending} onPress={() => enter("fixture", "alex@marketmap.example")} />
           {error ? <Text style={{ color: colors.clay }}>{error}</Text> : null}
           <Pressable onPress={() => router.push("/onboarding")}><Text style={{ color: colors.forest }}> </Text></Pressable>
         </ScrollView>
