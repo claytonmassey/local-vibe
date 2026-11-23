@@ -2,7 +2,7 @@ import type { GroupListing } from "@marketmap/domain";
 
 export type Role = "buyer" | "researcher" | "publisher" | "admin";
 
-export type User = { id: string; name: string; email: string; role: Role };
+export type User = { id: string; name: string; email: string; role: Role; passwordHash: string | null };
 
 export type Business = {
   id: string;
@@ -137,4 +137,4 @@ export type Store = {
   stripeEventIds: string[];
 };
 
-export const SEED_VERSION = 4;
+export const SEED_VERSION = 5;

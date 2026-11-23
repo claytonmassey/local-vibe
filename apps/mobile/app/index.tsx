@@ -6,20 +6,29 @@ import { Button, colors, Screen, serif, Status } from "@/components/ui";
 import { useSession } from "@/lib/session";
 
 export default function SignInScreen() {
-  const { ready, me, signIn } = useSession();
+  const { ready, me, signIn, signUp } = useSession();
+  const [mode, setMode] = useState<"signup" | "signin">("signup");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   if (!ready) return <Screen><Status loading /></Screen>;
   if (me) return <Redirect href="/(tabs)" />;
 
-  async function createAccount() {
+  async function submit() {
+    if (mode === "signup" && password !== confirm) {
+      setError("Those passwords do not match.");
+      return;
+    }
     setPending(true);
     setError(null);
     try {
-      const session = await signIn(email.trim(), "create", name.trim());
+      const session = mode === "signup"
+        ? await signUp(name.trim(), email.trim(), password)
+        : await signIn(email.trim(), password);
       router.replace(session.needsOnboarding ? "/onboarding" : "/(tabs)");
     } catch (err) {
       setError(err instanceof Error ? err.message : "The API did not answer. Start the web app, then try again.");
@@ -33,10 +42,28 @@ export default function SignInScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 22, gap: 14 }}>
           <Text style={{ color: "#5d6840", letterSpacing: 1.4, fontWeight: "700" }}>MARKETMAP</Text>
-          <Text style={{ fontFamily: serif, fontSize: 46, lineHeight: 48, color: colors.ink }}>Create your account</Text>
-          <TextInput value={name} onChangeText={setName} placeholder="Name" placeholderTextColor={colors.muted} style={field} />
+          <Text style={{ fontFamily: serif, fontSize: 46, lineHeight: 48, color: colors.ink }}>{mode === "signup" ? "Create your account" : "Sign in"}</Text>
+          {mode === "signup" ? <TextInput value={name} onChangeText={setName} placeholder="Name" placeholderTextColor={colors.muted} style={field} /> : null}
           <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="Email" placeholderTextColor={colors.muted} style={field} />
-          <Button label={pending ? "Creating account…" : "Create account"} disabled={pending || !name.trim() || !email.includes("@")} onPress={createAccount} />
+          <TextInput value={password} onChangeText={setPassword} secureTextEntry placeholder="Password" placeholderTextColor={colors.muted} style={field} />
+          {mode === "signup" ? <TextInput value={confirm} onChangeText={setConfirm} secureTextEntry placeholder="Confirm password" placeholderTextColor={colors.muted} style={field} /> : null}
+          {mode === "signup" ? <Text style={{ color: colors.muted }}>Use at least 8 characters.</Text> : null}
+          <Button
+            label={pending ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
+            disabled={pending || !email.includes("@") || password.length < (mode === "signup" ? 8 : 1) || (mode === "signup" && !name.trim())}
+            onPress={submit}
+          />
+          <Button
+            label={mode === "signup" ? "Already have an account? Sign in" : "Need an account? Create one"}
+            kind="ghost"
+            disabled={pending}
+            onPress={() => {
+              setMode(mode === "signup" ? "signin" : "signup");
+              setError(null);
+              setPassword("");
+              setConfirm("");
+            }}
+          />
           {error ? <Text style={{ color: colors.clay }}>{error}</Text> : null}
         </ScrollView>
       </SafeAreaView>

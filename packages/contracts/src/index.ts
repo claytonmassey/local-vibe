@@ -2,10 +2,15 @@ import { z } from "zod";
 
 export const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
+export const signUpBody = z.object({
+  name: z.string().trim().min(1, "Enter your name.").max(80),
+  email: z.string().trim().email("Enter a valid email."),
+  password: z.string().min(8, "Use at least 8 characters.").max(200),
+});
+
 export const signInBody = z.object({
-  mode: z.enum(["fixture", "create"]),
-  email: z.string().email(),
-  name: z.string().min(1).max(80).optional(),
+  email: z.string().trim().email("Enter a valid email."),
+  password: z.string().min(1, "Enter your password.").max(200),
 });
 
 export const onboardingBody = z.object({

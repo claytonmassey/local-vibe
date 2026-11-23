@@ -39,7 +39,9 @@ export function createClient(options: { baseUrl: string; getToken?: TokenSource 
   }
 
   return {
-    signIn: (body: { mode: "fixture" | "create"; email: string; name?: string }) =>
+    signUp: (body: { name: string; email: string; password: string }) =>
+      request<SessionDto>("/api/v1/account", { method: "POST", body: JSON.stringify(body) }),
+    signIn: (body: { email: string; password: string }) =>
       request<SessionDto>("/api/v1/session", { method: "POST", body: JSON.stringify(body) }),
     signOut: () => request<void>("/api/v1/session", { method: "DELETE" }),
     me: () => request<MeDto>("/api/v1/me"),

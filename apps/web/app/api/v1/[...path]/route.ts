@@ -9,6 +9,7 @@ import {
   patchDraftBody,
   patchPlanBody,
   signInBody,
+  signUpBody,
 } from "@marketmap/contracts";
 import { downloadAsset } from "@/lib/exports";
 import { jsonError, ApiError } from "@/lib/errors";
@@ -40,6 +41,7 @@ import {
   setFavorite,
   signIn,
   signOut,
+  signUp,
   submitCorrection,
 } from "@/lib/services";
 import { ZodError } from "zod";
@@ -71,9 +73,14 @@ async function dispatch(req: Request, path: string[]): Promise<Response> {
   const actor = actorFromToken(tokenFrom(req));
   const query = Object.fromEntries(url.searchParams.entries());
 
+  if (key === "POST account") {
+    const session = signUp(signUpBody.parse(await req.json()));
+    const response = Response.json(session, { status: 201 });
+    response.headers.append("set-cookie", sessionCookie(session.token));
+    return response;
+  }
   if (key === "POST session") {
-    const body = signInBody.parse(await req.json());
-    const session = signIn(body);
+    const session = signIn(signInBody.parse(await req.json()));
     const response = Response.json(session);
     response.headers.append("set-cookie", sessionCookie(session.token));
     return response;

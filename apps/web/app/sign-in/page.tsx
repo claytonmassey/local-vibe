@@ -11,10 +11,7 @@ export default function SignInPage() {
         <Link href="/"><Logo /></Link>
       </header>
       <main style={{ maxWidth: 440, margin: "12px auto 64px" }}>
-        <h1 className="display" style={{ fontSize: "clamp(40px, 6vw, 56px)" }}>Create your account</h1>
-        <section className="card">
-          <SignInForm />
-        </section>
+        <SignInForm />
       </main>
     </div>
   );

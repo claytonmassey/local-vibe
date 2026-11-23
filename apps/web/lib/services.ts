@@ -34,6 +34,7 @@ import type {
 } from "@marketmap/contracts";
 import { ApiError } from "./errors";
 import { distanceLabel, money, statusLabel, timeLabel } from "./labels";
+import { hashPassword, verifyPassword } from "./password";
 import type { Business, Draft, PlanItem, Store, User } from "./model";
 import { readStore, resetStore, updateStore } from "./store";
 
@@ -77,25 +78,40 @@ function requirePublisher(actor: Actor) {
   }
 }
 
-export function signIn(input: { mode: "fixture" | "create"; email: string; name?: string }): SessionDto {
+function openSession(store: Store, user: User): SessionDto {
+  const token = randomUUID();
+  store.sessions.push({ token, userId: user.id, createdAt: new Date().toISOString() });
+  const business = store.businesses.find((item) => item.ownerId === user.id) ?? null;
+  const entitled = store.entitlements.some((item) => item.userId === user.id && item.status === "active");
+  return {
+    token,
+    user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    needsOnboarding: user.role === "buyer" && !business,
+    entitled,
+  };
+}
+
+export function signUp(input: { name: string; email: string; password: string }): SessionDto {
+  const email = input.email.trim().toLowerCase();
+  const name = input.name.trim();
+  return updateStore((store) => {
+    if (store.users.some((item) => item.email === email)) {
+      throw new ApiError(409, "account_exists", "An account with that email already exists. Sign in instead.");
+    }
+    const user: User = { id: randomUUID(), name, email, role: "buyer", passwordHash: hashPassword(input.password) };
+    store.users.push(user);
+    return openSession(store, user);
+  });
+}
+
+export function signIn(input: { email: string; password: string }): SessionDto {
   const email = input.email.trim().toLowerCase();
   return updateStore((store) => {
-    let user = store.users.find((item) => item.email === email);
-    if (input.mode === "fixture" && !user) throw new ApiError(404, "unknown_account", "That fixture account is not in this preview.");
-    if (!user) {
-      user = { id: randomUUID(), name: input.name?.trim() || "New owner", email, role: "buyer" };
-      store.users.push(user);
+    const user = store.users.find((item) => item.email === email);
+    if (!user || !verifyPassword(input.password, user.passwordHash)) {
+      throw new ApiError(401, "invalid_credentials", "That email and password do not match.");
     }
-    const token = randomUUID();
-    store.sessions.push({ token, userId: user.id, createdAt: new Date().toISOString() });
-    const business = store.businesses.find((item) => item.ownerId === user!.id) ?? null;
-    const entitled = store.entitlements.some((item) => item.userId === user!.id && item.status === "active");
-    return {
-      token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-      needsOnboarding: user.role === "buyer" && !business,
-      entitled,
-    };
+    return openSession(store, user);
   });
 }
 

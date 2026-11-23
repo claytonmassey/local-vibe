@@ -15,20 +15,33 @@ async function send(path: string, init?: RequestInit) {
 
 export function SignInForm() {
   const router = useRouter();
+  const [mode, setMode] = useState<"signup" | "signin">("signup");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
 
-  async function createAccount(event: FormEvent) {
+  function switchMode(next: "signup" | "signin") {
+    setMode(next);
+    setError(null);
+    setPassword("");
+    setConfirm("");
+  }
+
+  async function submit(event: FormEvent) {
     event.preventDefault();
+    if (mode === "signup" && password !== confirm) {
+      setError("Those passwords do not match.");
+      return;
+    }
     setPending(true);
     setError(null);
     try {
-      const session = await send("/api/v1/session", {
-        method: "POST",
-        body: JSON.stringify({ mode: "create", email, name }),
-      });
+      const session = mode === "signup"
+        ? await send("/api/v1/account", { method: "POST", body: JSON.stringify({ name, email, password }) })
+        : await send("/api/v1/session", { method: "POST", body: JSON.stringify({ email, password }) });
       if (session.needsOnboarding) router.push("/onboarding");
       else router.push("/home");
       router.refresh();
@@ -39,13 +52,36 @@ export function SignInForm() {
     }
   }
 
+  const signingUp = mode === "signup";
   return (
-    <form className="stack" onSubmit={createAccount}>
-      <label className="field"><span>Name</span><input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required /></label>
-      <label className="field"><span>Email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
-      <button className="btn primary" disabled={pending}>{pending ? "Creating account…" : "Create account"}</button>
-      {error ? <p className="error" role="alert">{error}</p> : null}
-    </form>
+    <div className="stack">
+      <h1 className="display" style={{ fontSize: "clamp(40px, 6vw, 56px)", margin: 0 }}>{signingUp ? "Create your account" : "Sign in"}</h1>
+      <form className="card stack" onSubmit={submit}>
+        {signingUp ? (
+          <label className="field"><span>Name</span><input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required /></label>
+        ) : null}
+        <label className="field"><span>Email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
+        <label className="field">
+          <span>Password</span>
+          <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={signingUp ? "new-password" : "current-password"} minLength={signingUp ? 8 : 1} required />
+        </label>
+        {signingUp ? (
+          <label className="field">
+            <span>Confirm password</span>
+            <input type="password" value={confirm} onChange={(event) => setConfirm(event.target.value)} autoComplete="new-password" minLength={8} required />
+          </label>
+        ) : null}
+        {signingUp ? <p className="meta">Use at least 8 characters.</p> : null}
+        <button className="btn primary" disabled={pending}>{pending ? "Please wait…" : signingUp ? "Create account" : "Sign in"}</button>
+        {error ? <p className="error" role="alert">{error}</p> : null}
+        <p className="meta">
+          {signingUp ? "Already have an account? " : "Need an account? "}
+          <button type="button" className="btn quiet" onClick={() => switchMode(signingUp ? "signin" : "signup")}>
+            {signingUp ? "Sign in" : "Create one"}
+          </button>
+        </p>
+      </form>
+    </div>
   );
 }
 

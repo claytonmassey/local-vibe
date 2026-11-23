@@ -5,7 +5,8 @@ import { api, getToken, saveToken } from "./api";
 type SessionValue = {
   ready: boolean;
   me: MeDto | null;
-  signIn: (email: string, mode: "fixture" | "create", name?: string) => Promise<SessionDto>;
+  signUp: (name: string, email: string, password: string) => Promise<SessionDto>;
+  signIn: (email: string, password: string) => Promise<SessionDto>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
 };
@@ -31,8 +32,15 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setReady(true));
   }, []);
 
-  async function signIn(email: string, mode: "fixture" | "create", name?: string) {
-    const session = await api.signIn({ mode, email, name });
+  async function signUp(name: string, email: string, password: string) {
+    const session = await api.signUp({ name, email, password });
+    await saveToken(session.token);
+    await refresh();
+    return session;
+  }
+
+  async function signIn(email: string, password: string) {
+    const session = await api.signIn({ email, password });
     await saveToken(session.token);
     await refresh();
     return session;
@@ -48,7 +56,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     setMe(null);
   }
 
-  return <SessionContext.Provider value={{ ready, me, signIn, signOut, refresh }}>{children}</SessionContext.Provider>;
+  return <SessionContext.Provider value={{ ready, me, signUp, signIn, signOut, refresh }}>{children}</SessionContext.Provider>;
 }
 
 export function useSession() {

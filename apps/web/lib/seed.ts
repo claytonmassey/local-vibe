@@ -475,8 +475,8 @@ export function seedStore(now = new Date()): Store {
   return {
     seedVersion: SEED_VERSION,
     users: [
-      { id: "user_sara", name: "Sara Hale", email: "sara@wildorchid.example", role: "buyer" },
-      { id: "user_alex", name: "Alex Ruiz", email: "alex@marketmap.example", role: "admin" },
+      { id: "user_sara", name: "Sara Hale", email: "sara@wildorchid.example", role: "buyer", passwordHash: null },
+      { id: "user_alex", name: "Alex Ruiz", email: "alex@marketmap.example", role: "admin", passwordHash: null },
     ],
     businesses: [
       {
