@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react";
 async function send(path: string, init?: RequestInit) {
   const response = await fetch(path, {
     ...init,
+    credentials: "same-origin",
     headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
   });
   const data = await response.json().catch(() => ({}));
@@ -14,25 +15,28 @@ async function send(path: string, init?: RequestInit) {
 }
 
 export function SignInForm() {
-  const router = useRouter();
   const [mode, setMode] = useState<"signup" | "signin">("signup");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
 
   function switchMode(next: "signup" | "signin") {
     setMode(next);
     setError(null);
-    setPassword("");
-    setConfirm("");
+    setPending(false);
   }
 
-  async function submit(event: FormEvent) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (mode === "signup" && password !== confirm) {
+    const form = new FormData(event.currentTarget);
+    const enteredName = String(form.get("name") ?? "").trim();
+    const enteredEmail = String(form.get("email") ?? "").trim();
+    const enteredPassword = String(form.get("password") ?? "");
+    const enteredConfirm = String(form.get("confirm") ?? "");
+    if (mode === "signup" && enteredPassword.length < 8) {
+      setError("Use at least 8 characters.");
+      return;
+    }
+    if (mode === "signup" && enteredPassword !== enteredConfirm) {
       setError("Those passwords do not match.");
       return;
     }
@@ -40,14 +44,11 @@ export function SignInForm() {
     setError(null);
     try {
       const session = mode === "signup"
-        ? await send("/api/v1/account", { method: "POST", body: JSON.stringify({ name, email, password }) })
-        : await send("/api/v1/session", { method: "POST", body: JSON.stringify({ email, password }) });
-      if (session.needsOnboarding) router.push("/onboarding");
-      else router.push("/home");
-      router.refresh();
+        ? await send("/api/v1/account", { method: "POST", body: JSON.stringify({ name: enteredName, email: enteredEmail, password: enteredPassword }) })
+        : await send("/api/v1/session", { method: "POST", body: JSON.stringify({ email: enteredEmail, password: enteredPassword }) });
+      window.location.assign(session.needsOnboarding ? "/onboarding" : "/home");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Try again.");
-    } finally {
       setPending(false);
     }
   }
@@ -56,24 +57,24 @@ export function SignInForm() {
   return (
     <div className="stack">
       <h1 className="display" style={{ fontSize: "clamp(40px, 6vw, 56px)", margin: 0 }}>{signingUp ? "Create your account" : "Sign in"}</h1>
-      <form className="card stack" onSubmit={submit}>
+      <form key={mode} className="card stack" onSubmit={submit}>
         {signingUp ? (
-          <label className="field"><span>Name</span><input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required /></label>
+          <label className="field"><span>Name</span><input name="name" autoComplete="name" required /></label>
         ) : null}
-        <label className="field"><span>Email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
+        <label className="field"><span>Email</span><input name="email" type="email" autoComplete="email" required /></label>
         <label className="field">
           <span>Password</span>
-          <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={signingUp ? "new-password" : "current-password"} minLength={signingUp ? 8 : 1} required />
+          <input name="password" type="password" autoComplete={signingUp ? "new-password" : "current-password"} required />
         </label>
         {signingUp ? (
           <label className="field">
             <span>Confirm password</span>
-            <input type="password" value={confirm} onChange={(event) => setConfirm(event.target.value)} autoComplete="new-password" minLength={8} required />
+            <input name="confirm" type="password" autoComplete="new-password" required />
           </label>
         ) : null}
         {signingUp ? <p className="meta">Use at least 8 characters.</p> : null}
-        <button className="btn primary" disabled={pending}>{pending ? "Please wait…" : signingUp ? "Create account" : "Sign in"}</button>
         {error ? <p className="error" role="alert">{error}</p> : null}
+        <button className="btn primary" type="submit" disabled={pending} style={{ width: "100%" }}>{pending ? "Please wait…" : signingUp ? "Create account" : "Sign in"}</button>
         <p className="meta">
           {signingUp ? "Already have an account? " : "Need an account? "}
           <button type="button" className="btn quiet" onClick={() => switchMode(signingUp ? "signin" : "signup")}>
@@ -86,7 +87,6 @@ export function SignInForm() {
 }
 
 export function OnboardingForm({ initial }: { initial?: { businessName: string; category: string; zip: string; timeZone: string; offerings: string; tone: string; remindersOptIn?: boolean } }) {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   return (
@@ -110,8 +110,7 @@ export function OnboardingForm({ initial }: { initial?: { businessName: string; 
               remindersOptIn: form.get("remindersOptIn") === "on",
             }),
           });
-          router.push("/home");
-          router.refresh();
+          window.location.assign("/home");
         } catch (err) {
           setError(err instanceof Error ? err.message : "Try again.");
         } finally {
