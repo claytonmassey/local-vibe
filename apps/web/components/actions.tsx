@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
 async function send(path: string, init?: RequestInit) {
   const response = await fetch(path, {
@@ -20,16 +20,16 @@ export function SignInForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  async function enter(mode: "fixture" | "create", account: string, display?: string) {
+  async function createAccount(event: FormEvent) {
+    event.preventDefault();
     setPending(true);
     setError(null);
     try {
       const session = await send("/api/v1/session", {
         method: "POST",
-        body: JSON.stringify({ mode, email: account, name: display }),
+        body: JSON.stringify({ mode: "create", email, name }),
       });
-      if (session.user.role === "admin") router.push("/publisher");
-      else if (session.needsOnboarding) router.push("/onboarding");
+      if (session.needsOnboarding) router.push("/onboarding");
       else router.push("/home");
       router.refresh();
     } catch (err) {
@@ -40,32 +40,12 @@ export function SignInForm() {
   }
 
   return (
-    <div className="stack">
-      <form
-        className="stack"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void enter("create", email, name);
-        }}
-      >
-        <label className="field"><span>Your name</span><input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required /></label>
-        <label className="field"><span>Email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
-        <button className="btn primary" disabled={pending}>{pending ? "Creating account…" : "Create account"}</button>
-        <p className="meta">Use the same email later to come back to this week.</p>
-      </form>
-      <details>
-        <summary className="meta">Preview a sample account</summary>
-        <div className="stack" style={{ marginTop: 12 }}>
-          <button className="btn ghost" disabled={pending} onClick={() => enter("fixture", "sara@wildorchid.example")}>
-            Sara Hale, founding buyer
-          </button>
-          <button className="btn ghost" disabled={pending} onClick={() => enter("fixture", "alex@marketmap.example")}>
-            Alex Ruiz, publisher
-          </button>
-        </div>
-      </details>
+    <form className="stack" onSubmit={createAccount}>
+      <label className="field"><span>Name</span><input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" required /></label>
+      <label className="field"><span>Email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
+      <button className="btn primary" disabled={pending}>{pending ? "Creating account…" : "Create account"}</button>
       {error ? <p className="error" role="alert">{error}</p> : null}
-    </div>
+    </form>
   );
 }
 

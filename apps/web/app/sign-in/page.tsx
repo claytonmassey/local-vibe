@@ -10,12 +10,8 @@ export default function SignInPage() {
       <header className="site-header">
         <Link href="/"><Logo /></Link>
       </header>
-      <main className="grid-2" style={{ alignItems: "center", paddingBottom: 48 }}>
-        <div>
-          <p className="eyebrow">Your account</p>
-          <h1 className="display" style={{ fontSize: "clamp(46px, 6vw, 72px)" }}>Start with your name.</h1>
-          <p className="lede">Register first. A new account has no edition yet, so checkout at $7.99 can unlock it. The same email brings you back.</p>
-        </div>
+      <main style={{ maxWidth: 440, margin: "12px auto 64px" }}>
+        <h1 className="display" style={{ fontSize: "clamp(40px, 6vw, 56px)" }}>Create your account</h1>
         <section className="card">
           <SignInForm />
         </section>

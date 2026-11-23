@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Redirect, router } from "expo-router";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { ScrollView, Text, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, colors, Screen, serif, Status } from "@/components/ui";
 import { useSession } from "@/lib/session";
@@ -15,11 +15,11 @@ export default function SignInScreen() {
   if (!ready) return <Screen><Status loading /></Screen>;
   if (me) return <Redirect href="/(tabs)" />;
 
-  async function enter(mode: "fixture" | "create", account: string, display?: string) {
+  async function createAccount() {
     setPending(true);
     setError(null);
     try {
-      const session = await signIn(account, mode, display);
+      const session = await signIn(email.trim(), "create", name.trim());
       router.replace(session.needsOnboarding ? "/onboarding" : "/(tabs)");
     } catch (err) {
       setError(err instanceof Error ? err.message : "The API did not answer. Start the web app, then try again.");
@@ -33,15 +33,11 @@ export default function SignInScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 22, gap: 14 }}>
           <Text style={{ color: "#5d6840", letterSpacing: 1.4, fontWeight: "700" }}>MARKETMAP</Text>
-          <Text style={{ fontFamily: serif, fontSize: 46, lineHeight: 48, color: colors.ink }}>Plan the week. Respect the group.</Text>
-          <Text style={{ color: colors.muted, fontSize: 16 }}>Register with your name and email. A new account starts without the edition. Use the same email to come back.</Text>
-          <TextInput value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={colors.muted} style={field} />
+          <Text style={{ fontFamily: serif, fontSize: 46, lineHeight: 48, color: colors.ink }}>Create your account</Text>
+          <TextInput value={name} onChangeText={setName} placeholder="Name" placeholderTextColor={colors.muted} style={field} />
           <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="Email" placeholderTextColor={colors.muted} style={field} />
-          <Button label={pending ? "Creating account…" : "Create account"} disabled={pending || !name.trim() || !email.includes("@")} onPress={() => enter("create", email.trim(), name.trim())} />
-          <Button label="Preview Sara Hale" kind="ghost" disabled={pending} onPress={() => enter("fixture", "sara@wildorchid.example")} />
-          <Button label="Preview the publisher workspace" kind="ghost" disabled={pending} onPress={() => enter("fixture", "alex@marketmap.example")} />
+          <Button label={pending ? "Creating account…" : "Create account"} disabled={pending || !name.trim() || !email.includes("@")} onPress={createAccount} />
           {error ? <Text style={{ color: colors.clay }}>{error}</Text> : null}
-          <Pressable onPress={() => router.push("/onboarding")}><Text style={{ color: colors.forest }}> </Text></Pressable>
         </ScrollView>
       </SafeAreaView>
     </Screen>
