@@ -1,0 +1,6 @@
+{
+  "name": "@marketmap/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PostgreSQL migration for MarketMap. The running preview uses the web file store until DATABASE_URL is wired up."
+}

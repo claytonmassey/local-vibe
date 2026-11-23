@@ -1,0 +1,13 @@
+{
+  "name": "marketmap",
+  "private": true,
+  "packageManager": "pnpm@8.15.6",
+  "scripts": {
+    "dev": "pnpm --filter @marketmap/web dev",
+    "dev:mobile": "pnpm --filter @marketmap/mobile start",
+    "build": "pnpm --filter @marketmap/web build",
+    "test": "pnpm --filter @marketmap/domain test",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint"
+  }
+}
