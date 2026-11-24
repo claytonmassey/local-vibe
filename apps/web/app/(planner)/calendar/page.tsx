@@ -107,7 +107,7 @@ function Year({ anchor }: { anchor: string; byDate: Map<string, { posts: number 
       </div>
       {MONTH_GLANCE.map((month) => (
         <Link key={month.month} className="glance-row" href={`/calendar?view=month&date=${year}-${String(month.month).padStart(2, "0")}-01`}>
-          <span className="mark" aria-hidden="true">{month.mark}</span>
+          <span className="mark" aria-hidden="true">{String(month.month).padStart(2, "0")}</span>
           <span>
             <strong className="serif" style={{ fontSize: 26, display: "block" }}>{month.name}</strong>
             <span className="meta">{month.summary}</span>

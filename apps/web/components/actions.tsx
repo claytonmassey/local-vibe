@@ -359,10 +359,10 @@ export function RefundButton({ orderId }: { orderId: string }) {
   );
 }
 
-export function SignOutButton() {
+export function SignOutButton({ className = "btn ghost" }: { className?: string }) {
   return (
     <button
-      className="btn ghost"
+      className={className}
       onClick={async () => {
         await fetch("/api/v1/session", { method: "DELETE", credentials: "same-origin" });
         window.location.assign("/");

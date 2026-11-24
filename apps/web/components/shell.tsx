@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SignOutButton } from "./actions";
 import { Logo } from "./logo";
 
 const links = [
@@ -41,8 +42,11 @@ export function Shell({
           ))}
         </nav>
         <div className="who">
-          <strong>{name}</strong>
-          <span>{business}</span>
+          <div>
+            <strong>{name}</strong>
+            {business ? <span>{business}</span> : null}
+          </div>
+          <SignOutButton className="btn quiet" />
         </div>
       </aside>
       <div className="main" id="content">{children}</div>

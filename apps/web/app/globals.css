@@ -10,7 +10,7 @@
   --clay: #8c4638;
   --muted: #5d675f;
   --line: rgba(27, 42, 34, 0.12);
-  --shadow: 0 24px 60px rgba(27, 42, 34, 0.08);
+  --shadow: none;
   --serif: var(--font-serif), "Iowan Old Style", Palatino, Georgia, serif;
   --sans: var(--font-sans), "Avenir Next", "Segoe UI", sans-serif;
   color-scheme: light;
@@ -25,10 +25,7 @@ body {
   font-family: var(--sans);
   font-size: 16.5px;
   line-height: 1.5;
-  background:
-    radial-gradient(900px 420px at -10% -10%, rgba(166, 124, 61, 0.16), transparent 55%),
-    radial-gradient(800px 380px at 110% 0%, rgba(30, 74, 55, 0.08), transparent 50%),
-    var(--cream);
+  background: var(--cream);
 }
 a { color: inherit; }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -86,9 +83,10 @@ img { max-width: 100%; }
 }
 .nav a[aria-current="page"] { background: var(--forest); color: white; }
 .main { padding: 28px 20px 72px; max-width: 1120px; }
-.who { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.who { display: grid; gap: 2px; justify-items: start; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
 .who strong { display: block; }
 .who span { color: var(--muted); font-size: 14px; }
+.who .btn { min-height: 36px; }
 
 .display { font-family: var(--serif); font-weight: 520; letter-spacing: -0.035em; line-height: 0.98; margin: 0; }
 .lede { font-size: 18px; max-width: 42rem; color: var(--ink); }
@@ -149,6 +147,7 @@ img { max-width: 100%; }
 .week a.active { background: var(--forest); color: white; }
 .week a.active em, .week a.active small { color: rgba(255,255,255,0.78); }
 .week a.marked { border-color: rgba(30, 74, 55, 0.35); }
+.glyph { display: grid; place-items: center; color: var(--forest); line-height: 0; }
 .hub { display: grid; gap: 14px; max-width: 760px; }
 .hub-hello { display: flex; align-items: center; gap: 14px; }
 .hub-hello h1 { margin: 0; font-size: clamp(36px, 5vw, 48px); }
@@ -158,17 +157,20 @@ img { max-width: 100%; }
 .today-row strong { display: block; font-size: 20px; }
 .today-row em { font-style: normal; opacity: 0.85; }
 .today-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,0.12); }
-.chev { font-size: 28px; line-height: 1; }
+.chev { display: grid; place-items: center; }
 .theme-note { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; background: #f8efe4; border-radius: 18px; padding: 16px 18px; }
-.theme-note h2 { margin: 0 0 4px; font-family: var(--sans); font-size: 22px; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; color: var(--clay); }
+.theme-note .glyph { width: 36px; height: 36px; border-radius: 10px; background: white; color: var(--clay); }
+.theme-note h2 { margin: 0 0 4px; font-family: var(--sans); font-size: 18px; font-weight: 750; letter-spacing: 0.04em; text-transform: uppercase; color: var(--clay); }
 .theme-note p { margin: 0; }
 .stat-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.stat-tiles a { text-decoration: none; background: white; border: 1px solid var(--line); border-radius: 18px; padding: 16px 10px 14px; text-align: center; }
+.stat-tiles a { display: grid; justify-items: center; gap: 2px; text-decoration: none; background: white; border: 1px solid var(--line); border-radius: 18px; padding: 16px 10px 14px; text-align: center; }
 .stat-tiles strong { display: block; font-size: 28px; line-height: 1.1; }
 .stat-tiles em { font-style: normal; color: var(--muted); font-size: 13px; }
 .week-title { font-family: var(--serif); font-size: 30px; margin: 8px 0 0; letter-spacing: -0.03em; }
 .week.glance a { background: white; border: 1px solid var(--line); min-height: 92px; }
-.week.glance a em { font-size: 12px; }
+.week.glance a em { font-size: 13px; color: var(--ink); line-height: 1.25; }
+.week.glance a.active { background: var(--forest); color: white; border-color: var(--forest); }
+.week.glance a.active em, .week.glance a.active small { color: rgba(255, 255, 255, 0.86); }
 
 .pill {
   display: inline-flex;
@@ -276,11 +278,11 @@ textarea { min-height: 120px; resize: vertical; }
 .year-switch { display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid var(--line); border-radius: 999px; padding: 10px 18px; }
 .year-switch a { text-decoration: none; font-size: 22px; width: 36px; text-align: center; }
 .glance-row, .event-row { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; text-decoration: none; }
-.mark { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font-size: 26px; background: #e7eef6; }
+.mark { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--forest); background: #e7efe8; }
+.heart { border: 0; background: transparent; color: var(--clay); width: 40px; height: 40px; display: grid; place-items: center; cursor: pointer; padding: 0; }
 .date-badge { width: 68px; background: #f3e6cf; border-radius: 14px; text-align: center; padding: 8px 0; line-height: 1.1; }
 .date-badge span { display: block; font-size: 12px; letter-spacing: 0.08em; }
 .date-badge strong { font-family: var(--serif); font-size: 28px; }
-.heart { border: 0; background: transparent; color: var(--clay); font-size: 28px; cursor: pointer; }
 .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #efe6d6; border-radius: 999px; padding: 4px; }
 .seg button { border: 0; border-radius: 999px; min-height: 44px; background: transparent; cursor: pointer; font-weight: 700; }
 .seg button.on { background: var(--forest); color: white; }
@@ -310,7 +312,7 @@ textarea { min-height: 120px; resize: vertical; }
   .sidebar { border-bottom: 0; border-right: 1px solid var(--line); min-height: 100vh; position: sticky; top: 0; display: flex; flex-direction: column; }
   .nav { flex-direction: column; overflow: visible; padding-top: 28px; }
   .nav a { border-radius: 12px; }
-  .who { margin-top: auto; display: block; }
+  .who { margin-top: auto; }
   .main { padding: 40px 48px 80px; }
   .hero { grid-template-columns: 1.15fr 0.85fr; align-items: center; padding-top: 18px; }
   .grid-2 { grid-template-columns: 1.2fr 0.8fr; }

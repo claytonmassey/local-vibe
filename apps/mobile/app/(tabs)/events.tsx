@@ -19,7 +19,6 @@ export default function EventsScreen() {
     <Screen>
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 20, gap: 12 }}>
-          <Text style={{ fontSize: 28 }}>🤝</Text>
           <Text style={{ fontFamily: serif, fontSize: 34, lineHeight: 38 }}>Networking & Events</Text>
           <Text style={{ color: colors.muted }}>Local meetings, mixers & vendor opportunities. Sample listings, not a live feed.</Text>
           <View style={{ flexDirection: "row", backgroundColor: "#efe6d6", borderRadius: 999, padding: 4 }}>
@@ -40,10 +39,10 @@ export default function EventsScreen() {
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontWeight: "800", fontSize: 16 }}>{event.title}</Text>
                   <Text style={{ color: colors.muted }}>{event.when}</Text>
-                  <Text style={{ color: colors.muted }}>📍 {event.place}</Text>
+                  <Text style={{ color: colors.muted }}>{event.place}</Text>
                 </View>
                 <Pressable accessibilityLabel={loved ? "Remove from my events" : "Save event"} onPress={() => setFavorites((current) => loved ? current.filter((id) => id !== event.id) : [...current, event.id])}>
-                  <Text style={{ color: colors.clay, fontSize: 26 }}>{loved ? "♥" : "♡"}</Text>
+                  <Text style={{ color: loved ? colors.clay : colors.muted, fontWeight: "700" }}>{loved ? "Saved" : "Save"}</Text>
                 </Pressable>
               </View>
             );

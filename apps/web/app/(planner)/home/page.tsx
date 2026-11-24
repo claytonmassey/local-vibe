@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PlanButtons } from "@/components/actions";
+import { IconCheck, IconChevron, IconMegaphone, IconSpark, IconUsers } from "@/components/icons";
 import { Pill } from "@/components/ui";
 import { currentActor } from "@/lib/current";
 import { getHome } from "@/lib/services";
@@ -35,11 +36,11 @@ export default async function HomePage() {
           <strong>Today’s Plan</strong>
           <em>{weekday}, {month} {day}</em>
         </span>
-        <span className="chev" aria-hidden="true">›</span>
+        <span className="chev"><IconChevron size={20} /></span>
       </Link>
 
       <section className="theme-note">
-        <span aria-hidden="true">📣</span>
+        <span className="glyph"><IconMegaphone size={20} /></span>
         <div>
           <h2>{home.theme.name}</h2>
           <p>{home.theme.prompt}</p>
@@ -48,17 +49,17 @@ export default async function HomePage() {
 
       <section className="stat-tiles">
         <Link href={`/today?date=${home.today}`}>
-          <span aria-hidden="true">👥</span>
+          <span className="glyph"><IconUsers /></span>
           <strong>{home.counts.groups}</strong>
           <em>Groups to post in</em>
         </Link>
         <Link href="/studio">
-          <span aria-hidden="true">✨</span>
+          <span className="glyph"><IconSpark /></span>
           <strong>{home.counts.drafts}</strong>
           <em>AI post ready</em>
         </Link>
         <Link href={`/today?date=${home.today}`}>
-          <span aria-hidden="true">☑</span>
+          <span className="glyph"><IconCheck /></span>
           <strong>{tasksToday}</strong>
           <em>Tasks today</em>
         </Link>

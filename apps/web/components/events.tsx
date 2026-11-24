@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { LocalEvent } from "@marketmap/domain";
 import { LOCAL_EVENTS } from "@marketmap/domain";
+import { IconHeart } from "@/components/icons";
 
 const KEY = "mm_local_events";
 
@@ -48,7 +49,7 @@ export function EventsBoard() {
             <div>
               <h2 style={{ fontSize: 22, margin: 0 }}>{event.title}</h2>
               <p className="meta">{event.when}</p>
-              <p className="meta">📍 {event.place}</p>
+              <p className="meta">{event.place}</p>
             </div>
             <button
               type="button"
@@ -57,7 +58,7 @@ export function EventsBoard() {
               aria-label={loved ? "Remove from my events" : "Save event"}
               onClick={() => write({ ...saved, favorites: loved ? saved.favorites.filter((id) => id !== event.id) : [...saved.favorites, event.id] })}
             >
-              {loved ? "♥" : "♡"}
+              <IconHeart filled={loved} />
             </button>
           </article>
         );

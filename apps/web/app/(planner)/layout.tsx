@@ -8,7 +8,7 @@ export default async function PlannerLayout({ children }: { children: React.Reac
   const actor = await currentActor();
   if (!actor) redirect("/sign-in");
   return (
-    <Shell name={actor.user.name} business={actor.business?.name ?? "Publisher workspace"} role={actor.user.role}>
+    <Shell name={actor.user.name} business={actor.business?.name ?? ""} role={actor.user.role}>
       {children}
     </Shell>
   );
