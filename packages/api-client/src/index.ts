@@ -100,4 +100,4 @@ export function createClient(options: { baseUrl: string; getToken?: TokenSource 
   };
 }
 
-export type MarketMapClient = ReturnType<typeof createClient>;
+export type PostLocalClient = ReturnType<typeof createClient>;

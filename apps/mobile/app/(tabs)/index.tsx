@@ -4,11 +4,9 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { HomeDto } from "@marketmap/contracts";
 import { api } from "@/lib/api";
-import { Card, colors, Pill, Screen, serif, Status, Title } from "@/components/ui";
-import { useSession } from "@/lib/session";
+import { Card, colors, Pill, Screen, serif, Status } from "@/components/ui";
 
 export default function HomeScreen() {
-  const { me } = useSession();
   const [home, setHome] = useState<HomeDto | null>(null);
   const [error, setError] = useState<string | null>(null);
   const load = useCallback(() => {
@@ -24,26 +22,27 @@ export default function HomeScreen() {
           <Status loading={!home && !error} error={error} onRetry={load} />
           {home ? (
             <>
-              <Title kicker={home.businessName ?? "MarketMap"}>{`${home.greeting}, ${home.displayName}.`}</Title>
-              <View style={{ backgroundColor: colors.forest, borderRadius: 24, padding: 20, marginBottom: 16 }}>
-                <Text style={{ color: "#e7d7b2", letterSpacing: 1.2, fontSize: 12, fontWeight: "700" }}>TODAY’S PLAN</Text>
-                <Text style={{ fontFamily: serif, color: "#f6f1e7", fontSize: 36, lineHeight: 40, marginVertical: 8 }}>{home.theme.name}</Text>
-                <Text style={{ color: "#f6f1e7" }}>{home.theme.prompt}</Text>
-                <Pressable onPress={() => router.push({ pathname: "/today", params: { date: home.today } })} style={{ marginTop: 14, backgroundColor: "#f6f1e7", borderRadius: 999, minHeight: 44, alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ color: colors.forest, fontWeight: "700" }}>Open the day</Text>
-                </Pressable>
+              <Text style={{ fontFamily: serif, fontSize: 40, lineHeight: 44 }}>Hi {home.displayName}!</Text>
+              <Text style={{ color: colors.muted, marginBottom: 14 }}>{home.businessName ?? "Your business marketing hub"}</Text>
+              <Pressable onPress={() => router.push({ pathname: "/today", params: { date: home.today } })} style={{ backgroundColor: colors.forest, borderRadius: 18, padding: 16, marginBottom: 12 }}>
+                <Text style={{ color: "white", fontSize: 20, fontWeight: "800" }}>Today’s Plan</Text>
+                <Text style={{ color: "#f6f1e7" }}>{home.today}</Text>
+              </Pressable>
+              <View style={{ backgroundColor: "#f8efe4", borderRadius: 18, padding: 16, marginBottom: 12 }}>
+                <Text style={{ color: colors.clay, fontWeight: "800", letterSpacing: 0.4 }}>{home.theme.name.toUpperCase()}</Text>
+                <Text style={{ marginTop: 4 }}>{home.theme.prompt}</Text>
               </View>
-              {home.notices.map((notice) => (
-                <Text key={notice.id} style={{ backgroundColor: notice.tone === "warning" ? "#f6ead0" : "#e7efe8", padding: 12, borderRadius: 14, marginBottom: 8 }}>{notice.text}</Text>
-              ))}
-              <Pressable onPress={() => router.push("/(tabs)/calendar")} style={linkCard}><Text style={linkTitle}>Year at a Glance</Text><Text style={{ color: colors.muted }}>Holidays and marketing themes.</Text></Pressable>
-              <Pressable onPress={() => router.push("/events")} style={linkCard}><Text style={linkTitle}>Networking & Events</Text><Text style={{ color: colors.muted }}>Meetings, mixers and markets.</Text></Pressable>
-              <Pressable onPress={() => router.push("/(tabs)/groups")} style={linkCard}><Text style={linkTitle}>Facebook groups</Text><Text style={{ color: colors.muted }}>Local groups and promo rules.</Text></Pressable>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingVertical: 8 }}>
+              <View style={{ flexDirection: "row", gap: 8, marginBottom: 16 }}>
+                <Pressable onPress={() => router.push({ pathname: "/today", params: { date: home.today } })} style={tile}><Text style={tileNum}>{home.counts.groups}</Text><Text style={tileLabel}>Groups to post in</Text></Pressable>
+                <Pressable onPress={() => router.push("/(tabs)/studio")} style={tile}><Text style={tileNum}>{home.counts.drafts}</Text><Text style={tileLabel}>AI post ready</Text></Pressable>
+                <Pressable onPress={() => router.push({ pathname: "/today", params: { date: home.today } })} style={tile}><Text style={tileNum}>{home.plan.filter((item) => item.status !== "done").length}</Text><Text style={tileLabel}>Tasks today</Text></Pressable>
+              </View>
+              <Text style={{ fontFamily: serif, fontSize: 28, marginBottom: 8 }}>This week at a glance</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingBottom: 12 }}>
                 {home.week.map((day) => (
-                  <Pressable key={day.date} onPress={() => router.push({ pathname: "/today", params: { date: day.date } })} style={{ width: 74, borderRadius: 16, padding: 10, backgroundColor: day.active ? colors.forest : colors.paper }}>
-                    <Text style={{ color: day.active ? "#f6f1e7" : colors.muted, fontSize: 11 }}>{day.weekdayShort}</Text>
-                    <Text style={{ color: day.active ? "white" : colors.ink, fontSize: 20, fontWeight: "700" }}>{day.dayNumber}</Text>
+                  <Pressable key={day.date} onPress={() => router.push({ pathname: "/today", params: { date: day.date } })} style={{ width: 108, borderRadius: 16, padding: 10, backgroundColor: day.active ? colors.forest : "white" }}>
+                    <Text style={{ color: day.active ? "#f6f1e7" : colors.muted, fontSize: 12, fontWeight: "800" }}>{day.weekdayShort}</Text>
+                    <Text style={{ color: day.active ? "white" : colors.ink, marginTop: 4 }}>{day.theme}</Text>
                   </Pressable>
                 ))}
               </ScrollView>
@@ -54,7 +53,6 @@ export default function HomeScreen() {
                   <Pill label={item.statusLabel} tone={item.kind === "personal_reminder" ? "neutral" : item.promotionStatus} />
                 </Card>
               ))}
-              {!me?.entitled ? <Text style={{ color: colors.muted }}>Buy the edition on the web, then sign in here with the same email.</Text> : null}
             </>
           ) : null}
         </ScrollView>
@@ -63,5 +61,6 @@ export default function HomeScreen() {
   );
 }
 
-const linkCard = { backgroundColor: colors.paper, borderRadius: 16, padding: 14, marginBottom: 8 };
-const linkTitle = { fontFamily: serif, fontSize: 22, color: colors.ink };
+const tile = { flex: 1, backgroundColor: "white", borderRadius: 16, padding: 10, alignItems: "center" as const };
+const tileNum = { fontSize: 26, fontWeight: "800" as const, color: colors.ink };
+const tileLabel = { color: colors.muted, textAlign: "center" as const, fontSize: 12 };

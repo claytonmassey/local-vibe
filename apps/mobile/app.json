@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "MarketMap",
-    "slug": "marketmap",
-    "scheme": "marketmap",
+    "name": "PostLocal",
+    "slug": "postlocal",
+    "scheme": "postlocal",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.marketmap.planner"
+      "bundleIdentifier": "com.postlocal.planner"
     },
     "android": {
-      "package": "com.marketmap.planner"
+      "package": "com.postlocal.planner"
     },
     "plugins": ["expo-router", "expo-secure-store"],
     "experiments": {

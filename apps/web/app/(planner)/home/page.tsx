@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { formatCivilDate } from "@marketmap/domain";
 import { PlanButtons } from "@/components/actions";
 import { Pill } from "@/components/ui";
 import { currentActor } from "@/lib/current";
@@ -7,55 +6,82 @@ import { getHome } from "@/lib/services";
 
 export const metadata = { title: "Home" };
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 export default async function HomePage() {
   const actor = await currentActor();
   const home = getHome(actor!);
+  const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][new Date(`${home.today}T12:00:00Z`).getUTCDay()];
+  const day = Number(home.today.slice(8));
+  const month = MONTHS[Number(home.today.slice(5, 7)) - 1];
+  const tasksToday = home.plan.filter((item) => item.status !== "done").length;
   return (
-    <div className="stack" style={{ gap: 22 }}>
-      <header>
-        <p className="eyebrow">{home.edition ? `${home.edition.name} · ${home.edition.version}` : "Preview"}</p>
-        <h1 className="display" style={{ fontSize: "clamp(42px, 6vw, 68px)" }}>{home.greeting}, {home.displayName}.</h1>
-        <p className="lede">{home.businessName ? `${home.businessName} · ${formatCivilDate(home.today)}` : "Your business profile is the source for every draft."}</p>
+    <div className="hub">
+      <header className="hub-hello">
+        <span className="avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.8"/><path d="M5.5 19.2c1.4-3 3.6-4.4 6.5-4.4s5.1 1.4 6.5 4.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
+        </span>
+        <div>
+          <h1>Hi {home.displayName}!</h1>
+          <p>{home.businessName ? `${home.businessName} · your marketing hub` : "Your business marketing hub"}</p>
+        </div>
       </header>
-      {home.notices.map((notice) => (
-        <p key={notice.id} className={notice.tone === "warning" ? "notice" : "notice info"}>
-          {notice.text} <Link href={notice.href}>Open</Link>
-        </p>
-      ))}
-      <section className="theme-band">
-        <p className="eyebrow" style={{ color: "#e7d7b2" }}>Today’s plan</p>
-        <h2>{home.theme.name}</h2>
-        <p>{home.theme.prompt}</p>
-        <div className="btn-row" style={{ marginTop: 16, position: "relative" }}>
-          <Link className="btn primary" href={`/today?date=${home.today}`}>Open the day</Link>
-          <Link className="btn ghost" href={`/studio?date=${home.today}`}>Draft this theme</Link>
+
+      <Link className="today-row" href={`/today?date=${home.today}`}>
+        <span className="today-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8"/><path d="M8 3.5v3M16 3.5v3M4 10h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
+        </span>
+        <span>
+          <strong>Today’s Plan</strong>
+          <em>{weekday}, {month} {day}</em>
+        </span>
+        <span className="chev" aria-hidden="true">›</span>
+      </Link>
+
+      <section className="theme-note">
+        <span aria-hidden="true">📣</span>
+        <div>
+          <h2>{home.theme.name}</h2>
+          <p>{home.theme.prompt}</p>
         </div>
       </section>
-      <section className="discover">
-        <Link href="/calendar"><strong>Year at a Glance</strong><span>Holidays, campaigns and the month’s marketing themes.</span></Link>
-        <Link href="/events"><strong>Networking & Events</strong><span>Local meetings, mixers and vendor markets.</span></Link>
-        <Link href="/groups"><strong>Facebook groups</strong><span>Find local groups and the rules for a promo post.</span></Link>
+
+      <section className="stat-tiles">
+        <Link href={`/today?date=${home.today}`}>
+          <span aria-hidden="true">👥</span>
+          <strong>{home.counts.groups}</strong>
+          <em>Groups to post in</em>
+        </Link>
+        <Link href="/studio">
+          <span aria-hidden="true">✨</span>
+          <strong>{home.counts.drafts}</strong>
+          <em>AI post ready</em>
+        </Link>
+        <Link href={`/today?date=${home.today}`}>
+          <span aria-hidden="true">☑</span>
+          <strong>{tasksToday}</strong>
+          <em>Tasks today</em>
+        </Link>
       </section>
-      <section className="stats grid-3">
-        <Link href={`/today?date=${home.today}`}><strong>{home.counts.groups}</strong><span>Groups in today’s plan</span></Link>
-        <Link href="/studio"><strong>{home.counts.drafts}</strong><span>Ready drafts</span></Link>
-        <Link href="/calendar?view=week"><strong>{home.counts.tasks}</strong><span>Open tasks this week</span></Link>
-      </section>
+
       <section>
-        <div className="split-line"><h2 className="serif" style={{ fontSize: 28 }}>This week</h2><Link href="/calendar?view=week">Week view</Link></div>
-        <div className="week" style={{ marginTop: 10 }}>
-          {home.week.map((day) => (
-            <Link key={day.date} href={`/today?date=${day.date}`} className={`${day.active ? "active" : ""} ${day.hasPlan ? "marked" : ""}`}>
-              <small>{day.weekdayShort}</small>
-              <strong>{day.dayNumber}</strong>
-              <em>{day.theme.replace(/ (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)$/, "")}</em>
+        <h2 className="week-title">This week at a glance</h2>
+        <div className="week glance">
+          {home.week.map((dayItem) => (
+            <Link key={dayItem.date} href={`/today?date=${dayItem.date}`} className={dayItem.active ? "active" : ""}>
+              <small>{dayItem.weekdayShort}</small>
+              <em>{dayItem.theme}</em>
             </Link>
           ))}
         </div>
       </section>
+
+      {home.notices.filter((notice) => notice.tone === "warning").map((notice) => (
+        <p key={notice.id} className="notice">{notice.text} <Link href={notice.href}>Open</Link></p>
+      ))}
+
       <section className="stack">
-        <h2 className="serif" style={{ fontSize: 28 }}>On the plan</h2>
-        {home.plan.length === 0 ? <div className="empty"><p>Nothing is scheduled today. Open the day to add a suggestion or a personal reminder.</p></div> : home.plan.map((item) => (
+        {home.plan.length === 0 ? <p className="meta">Nothing is on today’s plan yet. Open the day when you are ready to add a group.</p> : home.plan.map((item) => (
           <article key={item.id} className="card flat item">
             <header>
               <div>

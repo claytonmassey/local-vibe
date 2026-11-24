@@ -20,7 +20,7 @@ export type DraftOutput = {
 
 export function composeDraft(input: DraftInput): DraftOutput {
   const reminders = [
-    "MarketMap does not post to Facebook. Copy the draft, open the group, and post it yourself.",
+    "PostLocal does not post to Facebook. Copy the draft, open the group, and post it yourself.",
     "Only facts you entered are included. No offer, testimonial or result was added.",
   ];
   if (input.conditions) reminders.unshift(input.conditions);

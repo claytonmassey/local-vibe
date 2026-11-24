@@ -6,7 +6,7 @@ const serif = Fraunces({ subsets: ["latin"], variable: "--font-serif", display: 
 const sans = Outfit({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "MarketMap", template: "%s · MarketMap" },
+  title: { default: "PostLocal", template: "%s · PostLocal" },
   description: "The local business marketing planner for community groups around Magnolia, Texas.",
 };
 

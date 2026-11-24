@@ -1,4 +1,4 @@
-# MarketMap
+# PostLocal
 
 The local business marketing planner. One repository holds the Next.js web app, the Expo app, and the shared planning rules. The founding preview is a Greater Magnolia, Texas edition. Group names, counts and rules are labeled fixtures.
 

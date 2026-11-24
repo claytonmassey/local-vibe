@@ -39,9 +39,9 @@ async function buildAsset(id: AssetRecord["id"]): Promise<AssetRecord> {
   const store = readStore();
   const bytes = id === "directory-xlsx" ? await workbookBytes() : await pdfBytes(id === "calendar-pdf" ? "calendar" : "directory");
   const labels = {
-    "directory-pdf": ["Directory PDF", "MarketMap-Greater-Magnolia-Directory.pdf"],
-    "directory-xlsx": ["Directory spreadsheet", "MarketMap-Greater-Magnolia-Directory.xlsx"],
-    "calendar-pdf": ["Weekly calendar", "MarketMap-Greater-Magnolia-Calendar.pdf"],
+    "directory-pdf": ["Directory PDF", "PostLocal-Greater-Magnolia-Directory.pdf"],
+    "directory-xlsx": ["Directory spreadsheet", "PostLocal-Greater-Magnolia-Directory.xlsx"],
+    "calendar-pdf": ["Weekly calendar", "PostLocal-Greater-Magnolia-Calendar.pdf"],
   } as const;
   return {
     id,
@@ -62,7 +62,7 @@ async function pdfBytes(kind: "directory" | "calendar"): Promise<Uint8Array> {
   const page = () => {
     const next = doc.addPage([612, 792]);
     next.drawRectangle({ x: 0, y: 742, width: 612, height: 50, color: forest });
-    next.drawText("MarketMap  ·  Greater Magnolia  ·  Fixture edition", { x: 48, y: 762, size: 12, font: sans, color: rgb(0.96, 0.93, 0.86) });
+    next.drawText("PostLocal  ·  Greater Magnolia  ·  Fixture edition", { x: 48, y: 762, size: 12, font: sans, color: rgb(0.96, 0.93, 0.86) });
     return next;
   };
   let current = page();
@@ -96,7 +96,7 @@ async function pdfBytes(kind: "directory" | "calendar"): Promise<Uint8Array> {
     write(store.edition.name, 28, serifBold, 34);
     write(`Published ${formatCivilDate(store.edition.publishedOn)} · Version ${store.edition.version}`, 11, sans, 18);
     write(store.edition.summary, 12, serif, 18);
-    write("Posting access and results depend on Facebook and other third parties. MarketMap does not post for you.", 11, sans, 20);
+    write("Posting access and results depend on Facebook and other third parties. PostLocal does not post for you.", 11, sans, 20);
     write("Status definitions: Confirmed allowed and Restricted can become verified slots when the evidence is current. Not allowed and Unknown cannot.", 11, sans, 22);
     for (const group of store.groups.filter((item) => item.listingStatus === "published")) {
       write(group.name, 16, serifBold, 20);
@@ -127,7 +127,7 @@ async function pdfBytes(kind: "directory" | "calendar"): Promise<Uint8Array> {
     write("Your personal plan stays in the app and can be printed from the week view. This calendar is the edition rhythm, not a promise that a group will accept a post.", 11, sans, 18);
   }
   write(`Questions: ${store.edition.supportEmail}. ${store.edition.refundSummary}`, 10, sans, 14);
-  doc.setTitle(kind === "directory" ? "MarketMap directory" : "MarketMap weekly calendar");
+  doc.setTitle(kind === "directory" ? "PostLocal directory" : "PostLocal weekly calendar");
   doc.setCreationDate(new Date(`${store.edition.publishedOn}T00:00:00.000Z`));
   return doc.save();
 }
@@ -139,7 +139,7 @@ export function editionDateLabel(iso: string) {
 async function workbookBytes(): Promise<Uint8Array> {
   const store = readStore();
   const book = new ExcelJS.Workbook();
-  book.creator = "MarketMap";
+  book.creator = "PostLocal";
   const directory = book.addWorksheet("Directory");
   directory.columns = [
     { header: "Name", key: "name", width: 36 },

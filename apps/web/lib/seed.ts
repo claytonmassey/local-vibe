@@ -503,7 +503,7 @@ export function seedStore(now = new Date()): Store {
       coverage: ["Magnolia", "The Woodlands", "Tomball", "Montgomery", "Conroe"],
       edge: ["Spring", "Klein", "Cypress", "Hockley", "Waller"],
       summary: "A researched week-planner for owners posting in community Facebook groups around Magnolia, Texas.",
-      supportEmail: "support@marketmap.example",
+      supportEmail: "support@postlocal.example",
       refundSummary: "Test access can be reset from the library. Live refund terms are not in force.",
       updateSummary: "This fixture edition does not include paid recurring updates.",
       priceLabel: "$7.99",

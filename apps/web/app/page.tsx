@@ -1,14 +1,16 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { civilToday, themeForDate } from "@marketmap/domain";
 import { AccountNav } from "@/components/account-nav";
 import { Logo } from "@/components/logo";
-import { currentActor, destinationFor } from "@/lib/current";
+import { currentActor } from "@/lib/current";
 import { catalog } from "@/lib/services";
 
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
   const actor = await currentActor();
+  if (actor) redirect("/home");
   const { edition, selling } = catalog();
   const today = civilToday("America/Chicago");
   const theme = themeForDate(today);
@@ -22,9 +24,9 @@ export default async function LandingPage() {
         <div className="hero-copy">
           <p className="kicker"><i /> Founding edition · ZIP {edition.anchorZip}</p>
           <h1 className="display">Plan the week. Respect the group.</h1>
-          <p className="lede">MarketMap is the planner for owners who promote in local Facebook groups the careful way: a researched window, a draft you can edit, and a handoff you finish yourself.</p>
+          <p className="lede">PostLocal is the planner for owners who promote in local Facebook groups the careful way: a researched window, a draft you can edit, and a handoff you finish yourself.</p>
           <div className="btn-row" style={{ marginTop: 22 }}>
-            <Link className="btn primary" href={actor ? destinationFor(actor) : "/sign-in"}>{actor ? "Open the planner" : "Create account"}</Link>
+            <Link className="btn primary" href="/sign-in">Create account</Link>
             <Link className="btn ghost" href="/edition">Find your town</Link>
           </div>
           <p className="meta">Fixture preview around Magnolia, Texas. {selling === "demo" ? "Checkout skips Stripe until it is connected." : "Live selling is locked."}</p>
@@ -74,7 +76,7 @@ export default async function LandingPage() {
         </div>
       </section>
       <footer className="site-footer">
-        <span className="muted">Support · support@marketmap.example</span>
+        <span className="muted">Support · support@postlocal.example</span>
         <span className="muted">Posting still happens on Facebook.</span>
       </footer>
     </div>

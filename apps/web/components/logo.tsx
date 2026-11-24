@@ -1,11 +1,14 @@
 export function Logo({ tone = "ink" }: { tone?: "ink" | "paper" }) {
+  const pupil = tone === "paper" ? "#f6f1e7" : "#1b2a22";
   return (
     <span className={`brand ${tone === "paper" ? "paper" : ""}`}>
-      <svg viewBox="0 0 32 32" aria-hidden="true">
-        <path fill="currentColor" d="M16 3.2c4.8 0 8.6 3.6 8.6 8.6 0 6-6.8 13.4-8 14.6a.9.9 0 0 1-1.2 0c-1.2-1.2-8-8.6-8-14.6C7.4 6.8 11.2 3.2 16 3.2Z" />
-        <path fill={tone === "paper" ? "#1e4a37" : "#f6f1e7"} d="M11.2 19.2v-4h2v4h-2Zm3.5 0V10.2h2V19.2h-2Zm3.6 0v-6.4h2v6.4h-2Z" />
+      <svg viewBox="8 6 50 66" aria-hidden="true">
+        <circle cx="36" cy="26" r="18" fill="currentColor" />
+        <path fill="currentColor" d="M18 26h16v18c0 8-3.2 14-8 20-4.8-6-8-12-8-20V26Z" />
+        <circle cx="41.5" cy="26" r="5.5" fill="#a67c3d" />
+        <circle cx="41.5" cy="26" r="2.05" fill={pupil} />
       </svg>
-      MarketMap
+      <span className="brand-name"><b>Post</b><span>Local</span></span>
     </span>
   );
 }

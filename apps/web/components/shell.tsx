@@ -32,7 +32,7 @@ export function Shell({
     <div className="shell">
       <a className="skip" href="#content">Skip to content</a>
       <aside className="sidebar">
-        <Link href="/home" aria-label="MarketMap home"><Logo /></Link>
+        <Link href="/home" aria-label="PostLocal home"><Logo /></Link>
         <nav className="nav" aria-label="Planner">
           {items.map(([href, label]) => (
             <Link key={href} href={href} aria-current={path === href || (href !== "/home" && path.startsWith(href)) ? "page" : undefined}>

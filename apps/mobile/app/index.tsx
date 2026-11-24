@@ -41,7 +41,7 @@ export default function SignInScreen() {
     <Screen>
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 22, gap: 14 }}>
-          <Text style={{ color: "#5d6840", letterSpacing: 1.4, fontWeight: "700" }}>MARKETMAP</Text>
+          <Text style={{ fontSize: 30, fontWeight: "800", letterSpacing: -0.8, color: colors.ink }}><Text style={{ fontFamily: serif, fontWeight: "600" }}>Post</Text><Text style={{ color: colors.forest }}>Local</Text></Text>
           <Text style={{ fontFamily: serif, fontSize: 46, lineHeight: 48, color: colors.ink }}>{mode === "signup" ? "Create your account" : "Sign in"}</Text>
           {mode === "signup" ? <TextInput value={name} onChangeText={setName} placeholder="Name" placeholderTextColor={colors.muted} style={field} /> : null}
           <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="Email" placeholderTextColor={colors.muted} style={field} />

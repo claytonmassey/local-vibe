@@ -13,7 +13,7 @@ export default async function PrintPlanPage() {
     <article>
       <p className="eyebrow">Personal plan · not an edition file</p>
       <h1 className="display" style={{ fontSize: 48 }}>Week of {formatCivilDate(week[0], false)}</h1>
-      <p>{actor?.business?.name}. Posting still happens in Facebook. MarketMap does not post for you.</p>
+      <p>{actor?.business?.name}. Posting still happens in Facebook. PostLocal does not post for you.</p>
       <div className="stack">
         {week.map((date) => (
           <section key={date}>
