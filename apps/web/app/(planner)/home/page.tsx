@@ -31,6 +31,11 @@ export default async function HomePage() {
           <Link className="btn ghost" href={`/studio?date=${home.today}`}>Draft this theme</Link>
         </div>
       </section>
+      <section className="discover">
+        <Link href="/calendar"><strong>Year at a Glance</strong><span>Holidays, campaigns and the month’s marketing themes.</span></Link>
+        <Link href="/events"><strong>Networking & Events</strong><span>Local meetings, mixers and vendor markets.</span></Link>
+        <Link href="/groups"><strong>Facebook groups</strong><span>Find local groups and the rules for a promo post.</span></Link>
+      </section>
       <section className="stats grid-3">
         <Link href={`/today?date=${home.today}`}><strong>{home.counts.groups}</strong><span>Groups in today’s plan</span></Link>
         <Link href="/studio"><strong>{home.counts.drafts}</strong><span>Ready drafts</span></Link>

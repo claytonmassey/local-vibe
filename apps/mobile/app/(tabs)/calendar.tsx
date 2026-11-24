@@ -1,47 +1,43 @@
-import { useCallback, useState } from "react";
-import { useFocusEffect, router } from "expo-router";
+import { useState } from "react";
+import { MONTH_GLANCE } from "@marketmap/domain";
+import { router } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { api } from "@/lib/api";
-import { colors, Screen, serif, Status, Title } from "@/components/ui";
+import { colors, Screen, serif } from "@/components/ui";
 
 export default function CalendarScreen() {
-  const [days, setDays] = useState<Array<{ date: string; posts: number; holiday: string | null; campaign: string | null }>>([]);
-  const [cursor, setCursor] = useState(() => new Date());
-  const [error, setError] = useState<string | null>(null);
-  const month = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}`;
-
-  const load = useCallback(() => {
-    const start = `${month}-01`;
-    const endDate = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0);
-    const end = `${month}-${String(endDate.getDate()).padStart(2, "0")}`;
-    setError(null);
-    api.calendar(start, end).then((result) => setDays(result.days)).catch((err) => setError(err instanceof Error ? err.message : "Could not load the calendar."));
-  }, [month, cursor]);
-  useFocusEffect(useCallback(() => { load(); }, [load]));
-
-  const label = cursor.toLocaleString("en-US", { month: "long", year: "numeric" });
+  const [year, setYear] = useState(2026);
   return (
     <Screen>
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ padding: 20 }}>
-          <Title kicker="Calendar">{label}</Title>
-          <View style={{ flexDirection: "row", gap: 8, marginBottom: 12 }}>
-            <Pressable onPress={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}><Text style={{ color: colors.forest }}>Previous</Text></Pressable>
-            <Pressable onPress={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}><Text style={{ color: colors.forest }}>Next</Text></Pressable>
+        <ScrollView contentContainerStyle={{ padding: 20, gap: 12 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Text style={{ fontSize: 28 }}>📅</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontFamily: serif, fontSize: 34, lineHeight: 38, color: colors.ink }}>Year at a Glance</Text>
+              <Text style={{ color: colors.muted }}>Major marketing days, holidays & campaigns.</Text>
+            </View>
           </View>
-          <Status loading={days.length === 0 && !error} error={error} onRetry={load} />
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-            {days.map((day) => (
-              <Pressable key={day.date} onPress={() => router.push({ pathname: "/today", params: { date: day.date } })} style={{ width: "13%", minHeight: 52, backgroundColor: colors.paper, borderRadius: 10, padding: 4 }}>
-                <Text style={{ fontFamily: serif }}>{Number(day.date.slice(8))}</Text>
-                {day.posts ? <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.forest }} /> : null}
-                {day.holiday ? <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.gold }} /> : null}
-                {day.campaign ? <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.clay }} /> : null}
-              </Pressable>
-            ))}
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: "white", borderRadius: 999, paddingHorizontal: 16, minHeight: 48 }}>
+            <Pressable onPress={() => setYear((value) => value - 1)} accessibilityLabel="Previous year"><Text style={{ fontSize: 22 }}>‹</Text></Pressable>
+            <Text style={{ fontSize: 22, fontWeight: "800" }}>{year}</Text>
+            <Pressable onPress={() => setYear((value) => value + 1)} accessibilityLabel="Next year"><Text style={{ fontSize: 22 }}>›</Text></Pressable>
           </View>
-          <Text style={{ color: colors.muted, marginTop: 12 }}>Forest is a planned post. Gold is a holiday. Clay is a campaign.</Text>
+          <Pressable onPress={() => router.push("/events")} style={{ backgroundColor: colors.forest, borderRadius: 999, minHeight: 44, alignItems: "center", justifyContent: "center" }}>
+            <Text style={{ color: "white", fontWeight: "700" }}>Networking & events</Text>
+          </Pressable>
+          {MONTH_GLANCE.map((month) => (
+            <Pressable key={month.month} onPress={() => router.push({ pathname: "/today", params: { date: `${year}-${String(month.month).padStart(2, "0")}-01` } })} style={{ flexDirection: "row", gap: 12, alignItems: "center", backgroundColor: colors.paper, borderRadius: 18, padding: 12 }}>
+              <View style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: "#e7eef6", alignItems: "center", justifyContent: "center" }}>
+                <Text style={{ fontSize: 26 }}>{month.mark}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: serif, fontSize: 24 }}>{month.name}</Text>
+                <Text style={{ color: colors.muted }}>{month.summary}</Text>
+              </View>
+              <Text style={{ color: colors.muted, fontSize: 22 }}>›</Text>
+            </Pressable>
+          ))}
         </ScrollView>
       </SafeAreaView>
     </Screen>

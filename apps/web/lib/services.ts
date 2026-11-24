@@ -336,7 +336,7 @@ function noticesFor(store: Store, actor: Actor): HomeDto["notices"] {
     notices.push({ id: "onboarding", tone: "info", text: "Add your business so drafts use your real details.", href: "/onboarding" });
   }
   if (!actor.entitled) {
-    notices.push({ id: "edition", tone: "info", text: "The directory, files and verified slots come with the founding edition.", href: "/edition" });
+    notices.push({ id: "edition", tone: "info", text: "The downloadable files and verified planning slots come with the founding edition.", href: "/library" });
   }
   const waller = store.groups.find((group) => group.id === "grp_waller");
   if (actor.entitled && waller?.correction) {
@@ -350,9 +350,6 @@ export function listGroups(actor: Actor | null, query: Record<string, string | u
   const store = readStore();
   const publisher = current.user.role === "admin" || current.user.role === "publisher";
   let items = store.groups.filter((group) => (publisher && query.scope === "all" ? true : group.listingStatus === "published"));
-  if (!current.entitled && !publisher) {
-    items = items.filter((group) => group.id === "grp_magnolia" || group.id === "grp_woodlands");
-  }
   const q = query.q?.trim().toLowerCase();
   if (q) items = items.filter((group) => `${group.name} ${group.city} ${group.ruleSummary}`.toLowerCase().includes(q));
   if (query.chip === "business_ads") items = items.filter((group) => group.audience === "business_ads");
@@ -370,9 +367,8 @@ export function listGroups(actor: Actor | null, query: Record<string, string | u
   if (query.membership === "5000-15000") items = items.filter((group) => (group.memberCount ?? 0) >= 5000 && (group.memberCount ?? 0) < 15000);
   if (query.membership === "15000-plus") items = items.filter((group) => (group.memberCount ?? 0) >= 15000);
   items = [...items].sort((a, b) => (a.distanceMiles ?? 999) - (b.distanceMiles ?? 999));
-  const sampleLimited = !current.entitled && !publisher;
   return {
-    items: items.map((group) => toGroup(store, group, current.business?.id ?? null, sampleLimited)),
+    items: items.map((group) => toGroup(store, group, current.business?.id ?? null, false)),
     total: items.length,
     entitled: current.entitled || publisher,
   };
@@ -385,12 +381,8 @@ export function getGroup(actor: Actor | null, id: string): GroupCardDto & { hist
   if (!group) throw new ApiError(404, "not_found", "That group is not in this edition.");
   const publisher = current.user.role === "admin" || current.user.role === "publisher";
   if (group.listingStatus !== "published" && !publisher) throw new ApiError(404, "not_found", "That group is not in this edition.");
-  if (!current.entitled && !publisher && group.id !== "grp_magnolia" && group.id !== "grp_woodlands") {
-    throw new ApiError(403, "not_entitled", "The full directory is part of the founding edition.");
-  }
-  const sample = !current.entitled && !publisher;
   return {
-    ...toGroup(store, group, current.business?.id ?? null, sample),
+    ...toGroup(store, group, current.business?.id ?? null, false),
     history: store.history.filter((item) => item.groupId === group.id).map((item) => ({ at: item.at, text: item.text })),
   };
 }

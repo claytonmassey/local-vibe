@@ -12,10 +12,10 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
   const chip = query.chip || "all";
   return (
     <div>
-      <p className="eyebrow">Local groups</p>
-      <h1 className="display" style={{ fontSize: "clamp(40px, 6vw, 64px)" }}>Where a post is actually allowed.</h1>
-      <p className="lede">Every count, window and status comes from the published fixture edition. Research rows stay with the publisher.</p>
-      {!result.entitled ? <p className="notice info">You are seeing the safe sample. Test checkout unlocks the rest of the directory. <Link href="/library">Library</Link></p> : null}
+      <p className="eyebrow">Facebook groups</p>
+      <h1 className="display" style={{ fontSize: "clamp(40px, 6vw, 64px)" }}>Find a local Facebook group.</h1>
+      <p className="lede">These are fixture groups around Greater Magnolia. Open one to see the promo rules and the Facebook link.</p>
+      {!result.entitled ? <p className="notice info">The directory below is the fixture preview. The downloadable files still unlock at checkout. <Link href="/library">Library</Link></p> : null}
       <div className="chips" style={{ marginTop: 16 }}>
         {[
           ["all", "All groups"],
@@ -76,6 +76,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
             </div>
             <p>{group.ruleSummary}</p>
             <p className="meta">{group.windows.map((window) => window.timeLabel).join(" · ") || "No verified window"}{group.favorite ? " · Favorited" : ""}</p>
+            {group.url ? <p><a href={group.url}>Open on Facebook</a></p> : null}
           </article>
         ))}
       </div>

@@ -4,6 +4,7 @@ import { assessEligibility } from "./eligibility";
 import { ZIP_77354_CENTROID, haversineMiles } from "./distance";
 import { mapPromotionCell, validateFacebookGroupRows } from "./import";
 import { addPlanItem, opportunitiesForDate } from "./planning";
+import { LOCAL_EVENTS, MONTH_GLANCE } from "./glance";
 import { themeForDate } from "./themes";
 import { addDays, civilWeekday, startOfWeekMonday, weekDates, zonedLocalToUtc } from "./time";
 import type { GroupListing, PlanDraft } from "./types";
@@ -59,6 +60,9 @@ function group(overrides: Partial<GroupListing> = {}): GroupListing {
 describe("calendar dates", () => {
   it("keeps Sunday as Setup Sunday and Monday as the week start", () => {
     expect(civilWeekday("2026-11-22")).toBe(0);
+    expect(MONTH_GLANCE).toHaveLength(12);
+    expect(MONTH_GLANCE[0].summary).toContain("New Year Goals");
+    expect(LOCAL_EVENTS[0].place).toContain("Magnolia");
     expect(themeForDate("2026-11-22").name).toBe("Setup Sunday");
     expect(themeForDate("2026-11-16").name).toBe("Marketing Monday");
     expect(startOfWeekMonday("2026-11-22")).toBe("2026-11-16");

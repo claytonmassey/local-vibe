@@ -36,6 +36,9 @@ export default function HomeScreen() {
               {home.notices.map((notice) => (
                 <Text key={notice.id} style={{ backgroundColor: notice.tone === "warning" ? "#f6ead0" : "#e7efe8", padding: 12, borderRadius: 14, marginBottom: 8 }}>{notice.text}</Text>
               ))}
+              <Pressable onPress={() => router.push("/(tabs)/calendar")} style={linkCard}><Text style={linkTitle}>Year at a Glance</Text><Text style={{ color: colors.muted }}>Holidays and marketing themes.</Text></Pressable>
+              <Pressable onPress={() => router.push("/events")} style={linkCard}><Text style={linkTitle}>Networking & Events</Text><Text style={{ color: colors.muted }}>Meetings, mixers and markets.</Text></Pressable>
+              <Pressable onPress={() => router.push("/(tabs)/groups")} style={linkCard}><Text style={linkTitle}>Facebook groups</Text><Text style={{ color: colors.muted }}>Local groups and promo rules.</Text></Pressable>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingVertical: 8 }}>
                 {home.week.map((day) => (
                   <Pressable key={day.date} onPress={() => router.push({ pathname: "/today", params: { date: day.date } })} style={{ width: 74, borderRadius: 16, padding: 10, backgroundColor: day.active ? colors.forest : colors.paper }}>
@@ -59,3 +62,6 @@ export default function HomeScreen() {
     </Screen>
   );
 }
+
+const linkCard = { backgroundColor: colors.paper, borderRadius: 16, padding: 14, marginBottom: 8 };
+const linkTitle = { fontFamily: serif, fontSize: 22, color: colors.ink };

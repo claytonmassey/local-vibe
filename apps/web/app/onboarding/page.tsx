@@ -14,10 +14,12 @@ export default async function OnboardingPage() {
     <div className="site-wrap">
       <header className="site-header">
         <Link href="/"><Logo /></Link>
-        <div className="btn-row">
-          <span className="meta">{actor.user.email}</span>
+        <nav className="btn-row">
+          <Link href="/groups">Facebook groups</Link>
+          <Link href="/calendar">Year at a glance</Link>
+          <Link href="/events">Events</Link>
           <SignOutButton />
-        </div>
+        </nav>
       </header>
       <main style={{ maxWidth: 760, paddingBottom: 64 }}>
         <p className="eyebrow">Business profile</p>

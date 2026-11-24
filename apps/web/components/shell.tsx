@@ -6,10 +6,11 @@ import { Logo } from "./logo";
 
 const links = [
   ["/home", "Home"],
-  ["/today", "Today"],
   ["/calendar", "Calendar"],
-  ["/studio", "Studio"],
-  ["/groups", "Groups"],
+  ["/events", "Events"],
+  ["/studio", "Post Studio"],
+  ["/groups", "Facebook groups"],
+  ["/today", "Today"],
   ["/library", "Library"],
   ["/more", "More"],
 ];

@@ -29,7 +29,7 @@ export default function GroupsScreen() {
     <Screen>
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 20 }}>
-          <Title kicker="Local groups">Where a post is allowed.</Title>
+          <Title kicker="Facebook groups">Find a local Facebook group.</Title>
           <TextInput value={query} onChangeText={setQuery} onSubmitEditing={() => load(chip, query)} placeholder="Search name, city or keyword" placeholderTextColor={colors.muted} style={{ backgroundColor: "white", borderRadius: 14, minHeight: 46, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.line }} />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingVertical: 12 }}>
             {chips.map(([value, label]) => (

@@ -23,6 +23,7 @@ export default function OnboardingScreen() {
           <TextInput value={category} onChangeText={setCategory} placeholder="Category" placeholderTextColor={colors.muted} style={field} />
           <TextInput value={zip} onChangeText={setZip} placeholder="ZIP" placeholderTextColor={colors.muted} style={field} />
           <TextInput value={offerings} onChangeText={setOfferings} placeholder="Offerings" placeholderTextColor={colors.muted} multiline style={[field, { minHeight: 90 }]} />
+          <Button label="Look around first" kind="ghost" onPress={() => router.replace("/(tabs)")} />
           <Button label="Save" onPress={async () => {
             try {
               await api.saveProfile({ businessName, category, zip, timeZone: "America/Chicago", offerings, tone: me?.business?.tone || "Friendly" });

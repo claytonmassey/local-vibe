@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { addDays, civilToday, daysInMonth, formatCivilDate, monthKey, themeForDate, weekdayShort } from "@marketmap/domain";
+import { addDays, civilToday, formatCivilDate, MONTH_GLANCE, monthKey, themeForDate, weekdayShort } from "@marketmap/domain";
 import { currentActor } from "@/lib/current";
 import { calendarRange, getCalendar, getPlan, monthGrid } from "@/lib/services";
 
@@ -10,7 +10,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   const actor = await currentActor();
   const zone = actor?.business?.timeZone ?? "America/Chicago";
   const anchor = params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : civilToday(zone);
-  const view = params.view === "week" || params.view === "year" ? params.view : "month";
+  const view = params.view === "week" || params.view === "month" ? params.view : "year";
   const range = calendarRange(view, anchor);
   const calendar = getCalendar(actor, range.from, range.to);
   const byDate = new Map(calendar.days.map((day) => [day.date, day]));
@@ -22,11 +22,13 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
       <div className="calendar-head">
         <div>
           <p className="eyebrow">Marketing calendar</p>
-          <h1 className="display" style={{ fontSize: "clamp(40px, 5vw, 60px)" }}>{title}</h1>
+          <h1 className="display" style={{ fontSize: "clamp(40px, 5vw, 60px)" }}>{view === "year" ? "Year at a Glance" : title}</h1>
+          {view === "year" ? <p className="lede">Major marketing days, holidays and campaigns.</p> : null}
         </div>
         <div className="btn-row">
           <Link className="btn ghost" href={`/calendar?view=${view}&date=${prev}`}>Previous</Link>
           <Link className="btn ghost" href={`/calendar?view=${view}&date=${next}`}>Next</Link>
+          <Link className="btn primary" href="/events">Networking & events</Link>
         </div>
       </div>
       <div className="chips">
@@ -94,21 +96,25 @@ async function Week({ from, to }: { actorReady?: boolean; from: string; to: stri
   );
 }
 
-function Year({ anchor, byDate }: { anchor: string; byDate: Map<string, { posts: number }> }) {
-  const year = anchor.slice(0, 4);
+function Year({ anchor }: { anchor: string; byDate: Map<string, { posts: number }> }) {
+  const year = Number(anchor.slice(0, 4));
   return (
-    <div className="year-grid">
-      {Array.from({ length: 12 }, (_, index) => {
-        const month = `${year}-${String(index + 1).padStart(2, "0")}`;
-        const days = daysInMonth(month);
-        const posts = days.reduce((sum, date) => sum + (byDate.get(date)?.posts ?? 0), 0);
-        return (
-          <Link key={month} className="mini" href={`/calendar?view=month&date=${days[0]}`}>
-            <strong className="serif" style={{ fontSize: 24 }}>{monthGrid(month).label.replace(` ${year}`, "")}</strong>
-            <p className="meta">{posts === 0 ? "No posts planned" : `${posts} planned`}</p>
-          </Link>
-        );
-      })}
+    <div className="stack">
+      <div className="year-switch">
+        <Link href={`/calendar?view=year&date=${year - 1}-06-01`} aria-label="Previous year">‹</Link>
+        <strong>{year}</strong>
+        <Link href={`/calendar?view=year&date=${year + 1}-06-01`} aria-label="Next year">›</Link>
+      </div>
+      {MONTH_GLANCE.map((month) => (
+        <Link key={month.month} className="glance-row" href={`/calendar?view=month&date=${year}-${String(month.month).padStart(2, "0")}-01`}>
+          <span className="mark" aria-hidden="true">{month.mark}</span>
+          <span>
+            <strong className="serif" style={{ fontSize: 26, display: "block" }}>{month.name}</strong>
+            <span className="meta">{month.summary}</span>
+          </span>
+          <span aria-hidden="true">›</span>
+        </Link>
+      ))}
     </div>
   );
 }

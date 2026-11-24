@@ -24,6 +24,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" color={tint(color)} size={size} /> }} />
       <Tabs.Screen name="calendar" options={{ title: "Calendar", tabBarIcon: ({ color, size }) => <Ionicons name="calendar-outline" color={tint(color)} size={size} /> }} />
       <Tabs.Screen name="studio" options={{ title: "Studio", tabBarIcon: ({ color, size }) => <Ionicons name="create-outline" color={tint(color)} size={size} /> }} />
+      <Tabs.Screen name="events" options={{ href: null }} />
       <Tabs.Screen name="groups" options={{ title: "Groups", tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" color={tint(color)} size={size} /> }} />
       <Tabs.Screen name="more" options={{ title: "More", tabBarIcon: ({ color, size }) => <Ionicons name="ellipsis-horizontal" color={tint(color)} size={size} /> }} />
     </Tabs>

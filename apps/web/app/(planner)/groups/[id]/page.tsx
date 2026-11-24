@@ -29,7 +29,7 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
   const eligibility = assessEligibility(source, today);
   return (
     <div className="stack" style={{ gap: 18 }}>
-      <p className="meta"><Link href="/groups">Groups</Link> · {group.fixture ? "Fixture listing" : "Listing"}</p>
+      <p className="meta"><Link href="/groups">Facebook groups</Link> · {group.fixture ? "Fixture listing" : "Listing"}</p>
       <div className="split-line">
         <h1 className="display" style={{ fontSize: "clamp(40px, 6vw, 64px)", maxWidth: "16ch" }}>{group.name}</h1>
         <Pill status={group.promotionStatus}>{group.statusLabel}</Pill>
