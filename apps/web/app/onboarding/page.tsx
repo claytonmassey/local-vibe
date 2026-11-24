@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { OnboardingForm } from "@/components/actions";
+import { OnboardingForm, SignOutButton } from "@/components/actions";
 import { currentActor } from "@/lib/current";
 
 export const metadata = { title: "Your business" };
+export const dynamic = "force-dynamic";
 
 export default async function OnboardingPage() {
   const actor = await currentActor();
@@ -13,6 +14,10 @@ export default async function OnboardingPage() {
     <div className="site-wrap">
       <header className="site-header">
         <Link href="/"><Logo /></Link>
+        <div className="btn-row">
+          <span className="meta">{actor.user.email}</span>
+          <SignOutButton />
+        </div>
       </header>
       <main style={{ maxWidth: 760, paddingBottom: 64 }}>
         <p className="eyebrow">Business profile</p>

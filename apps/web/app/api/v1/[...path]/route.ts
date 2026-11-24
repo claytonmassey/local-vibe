@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { cookies } from "next/headers";
 import {
   addPlanBody,
   checkoutBody,
@@ -75,21 +76,18 @@ async function dispatch(req: Request, path: string[]): Promise<Response> {
 
   if (key === "POST account") {
     const session = await signUp(signUpBody.parse(await req.json()));
-    const response = Response.json(session, { status: 201 });
-    response.headers.append("set-cookie", sessionCookie(session.token));
-    return response;
+    await remember(session.token);
+    return Response.json(session, { status: 201 });
   }
   if (key === "POST session") {
     const session = await signIn(signInBody.parse(await req.json()));
-    const response = Response.json(session);
-    response.headers.append("set-cookie", sessionCookie(session.token));
-    return response;
+    await remember(session.token);
+    return Response.json(session);
   }
   if (key === "DELETE session") {
     await signOut(tokenFrom(req));
-    const response = new Response(null, { status: 204 });
-    response.headers.append("set-cookie", sessionCookie(null));
-    return response;
+    await remember(null);
+    return new Response(null, { status: 204 });
   }
   if (key === "GET me") return Response.json(getMe(actor));
   if (key === "POST onboarding") return Response.json(await saveBusiness(actor, onboardingBody.parse(await req.json())));
@@ -157,14 +155,20 @@ function tokenFrom(req: Request): string | null {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-function sessionCookie(token: string | null): string {
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  if (!token) return `mm_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`;
-  return `mm_session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${secure}`;
+async function remember(token: string | null) {
+  const jar = await cookies();
+  jar.set("mm_session", token ?? "", {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: token ? 60 * 60 * 24 * 30 : 0,
+    secure: process.env.NODE_ENV === "production",
+  });
 }
 
 function withMeta(response: Response, requestId: string): Response {
   const headers = new Headers(response.headers);
+  for (const cookie of response.headers.getSetCookie()) headers.append("set-cookie", cookie);
   headers.set("x-request-id", requestId);
   headers.set("access-control-allow-origin", process.env.CORS_ORIGIN ?? "*");
   headers.set("access-control-allow-headers", "authorization, content-type");

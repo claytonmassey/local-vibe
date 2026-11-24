@@ -192,6 +192,7 @@ img { max-width: 100%; }
 .item { display: grid; gap: 8px; }
 .item header, .split-line { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
 .meta { color: var(--muted); font-size: 14px; margin: 0; }
+.meta a, .site-header > a { color: var(--forest); font-weight: 650; text-underline-offset: 3px; }
 
 .field { display: grid; gap: 6px; }
 .field span, label { font-size: 14px; font-weight: 650; }

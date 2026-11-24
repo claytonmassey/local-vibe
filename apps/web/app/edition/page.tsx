@@ -1,11 +1,15 @@
 import Link from "next/link";
+import { AccountNav } from "@/components/account-nav";
 import { Logo } from "@/components/logo";
 import { Pill, members } from "@/components/ui";
+import { currentActor, destinationFor } from "@/lib/current";
 import { catalog, matchQuery } from "@/lib/services";
 
 export const metadata = { title: "Greater Magnolia" };
+export const dynamic = "force-dynamic";
 
 export default async function EditionPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const actor = await currentActor();
   const { q = "" } = await searchParams;
   const { edition, sample } = catalog();
   const match = q ? matchQuery(q) : null;
@@ -13,7 +17,7 @@ export default async function EditionPage({ searchParams }: { searchParams: Prom
     <div className="site-wrap">
       <header className="site-header">
         <Link href="/"><Logo /></Link>
-        <Link className="btn primary" href="/sign-in">Create account</Link>
+        <AccountNav />
       </header>
       <main>
         <p className="eyebrow">Edition {edition.version}</p>
@@ -42,7 +46,12 @@ export default async function EditionPage({ searchParams }: { searchParams: Prom
             <p>{edition.updateSummary}</p>
             <p>{edition.refundSummary}</p>
             <p className="meta">Stripe is not connected yet, so checkout unlocks the edition without a charge. Support {edition.supportEmail}</p>
-            <Link className="btn primary" href="/sign-in">Create an account</Link>
+            {actor ? <Link className="btn primary" href={destinationFor(actor)}>Open the planner</Link> : (
+              <>
+                <Link className="btn ghost" href="/login">Log in</Link>
+                <Link className="btn primary" href="/sign-in">Create an account</Link>
+              </>
+            )}
           </section>
         </div>
         <section style={{ marginTop: 28 }}>

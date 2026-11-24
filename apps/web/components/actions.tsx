@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
@@ -14,16 +15,9 @@ async function send(path: string, init?: RequestInit) {
   return data;
 }
 
-export function SignInForm() {
-  const [mode, setMode] = useState<"signup" | "signin">("signup");
+export function SignInForm({ mode }: { mode: "signup" | "signin" }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-
-  function switchMode(next: "signup" | "signin") {
-    setMode(next);
-    setError(null);
-    setPending(false);
-  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,7 +51,7 @@ export function SignInForm() {
   return (
     <div className="stack">
       <h1 className="display" style={{ fontSize: "clamp(40px, 6vw, 56px)", margin: 0 }}>{signingUp ? "Create your account" : "Sign in"}</h1>
-      <form key={mode} className="card stack" onSubmit={submit}>
+      <form className="card stack" onSubmit={submit}>
         {signingUp ? (
           <label className="field"><span>Name</span><input name="name" autoComplete="name" required /></label>
         ) : null}
@@ -77,9 +71,7 @@ export function SignInForm() {
         <button className="btn primary" type="submit" disabled={pending} style={{ width: "100%" }}>{pending ? "Please wait…" : signingUp ? "Create account" : "Sign in"}</button>
         <p className="meta">
           {signingUp ? "Already have an account? " : "Need an account? "}
-          <button type="button" className="btn quiet" onClick={() => switchMode(signingUp ? "signin" : "signup")}>
-            {signingUp ? "Sign in" : "Create one"}
-          </button>
+          <Link href={signingUp ? "/login" : "/sign-in"}>{signingUp ? "Log in" : "Create an account"}</Link>
         </p>
       </form>
     </div>
@@ -368,14 +360,12 @@ export function RefundButton({ orderId }: { orderId: string }) {
 }
 
 export function SignOutButton() {
-  const router = useRouter();
   return (
     <button
       className="btn ghost"
       onClick={async () => {
-        await fetch("/api/v1/session", { method: "DELETE" });
-        router.push("/");
-        router.refresh();
+        await fetch("/api/v1/session", { method: "DELETE", credentials: "same-origin" });
+        window.location.assign("/");
       }}
     >
       Sign out
