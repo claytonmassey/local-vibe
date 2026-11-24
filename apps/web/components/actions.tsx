@@ -359,7 +359,7 @@ export function RefundButton({ orderId }: { orderId: string }) {
   );
 }
 
-export function SignOutButton({ className = "btn ghost" }: { className?: string }) {
+export function SignOutButton({ className = "btn ghost", children = "Sign out" }: { className?: string; children?: React.ReactNode }) {
   return (
     <button
       className={className}
@@ -368,7 +368,7 @@ export function SignOutButton({ className = "btn ghost" }: { className?: string 
         window.location.assign("/");
       }}
     >
-      Sign out
+      {children}
     </button>
   );
 }
